@@ -9,6 +9,7 @@ python = "^3.9"
 fastapi = "^0.70.0"
 motor = "^2.5.1"
 uvicorn = "^0.15.0"
+python-dotenv = "^0.19.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
