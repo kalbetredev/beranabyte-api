@@ -17,6 +17,9 @@ fastapi = "^0.70.0"
 motor = "^2.5.1"
 uvicorn = "^0.15.0"
 python-dotenv = "^0.19.2"
+pydantic = "^1.8.2"
+strawberry-graphql = {extras = ["fastapi"], version = "^0.90.0"}
+websockets = "^10.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
