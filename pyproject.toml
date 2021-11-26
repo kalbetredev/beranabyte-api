@@ -4,6 +4,13 @@ version = "0.1.0"
 description = "API for beranabyte.com website"
 authors = ["Kalkidan Betre <kalbetre.dev@outlook.com>"]
 
+packages = [
+    { include = "api" }
+]
+
+[tool.poetry.scripts]
+start = "api.app:start_app"
+
 [tool.poetry.dependencies]
 python = "^3.9"
 fastapi = "^0.70.0"
