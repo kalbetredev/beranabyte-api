@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "beranabyte-api"
+version = "0.1.0"
+description = "API for beranabyte.com website"
+authors = ["Kalkidan Betre <kalbetre.dev@outlook.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.70.0"
+motor = "^2.5.1"
+uvicorn = "^0.15.0"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+autopep8 = "^1.6.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
