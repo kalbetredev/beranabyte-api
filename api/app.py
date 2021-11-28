@@ -1,11 +1,17 @@
 import uvicorn
+import strawberry
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from strawberry.fastapi import GraphQLRouter
 from api.config.settings import settings
+from api.schemas.query import Query
 
+schema = strawberry.Schema(query=Query)
+
+graphql_app = GraphQLRouter(schema, graphiql=settings.graphiql)
 
 app = FastAPI()
-
+app.include_router(graphql_app, prefix='/api')
 
 origins = [
     settings.client_url
