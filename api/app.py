@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
 from api.config.settings import settings
 from api.schemas.query import Query
+from api.schemas.queries.apiquery import Query
 
 schema = strawberry.Schema(query=Query)
 
