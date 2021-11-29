@@ -11,6 +11,10 @@ class Database(ABC):
         pass
 
     @abstractmethod
+    def get_blogs(self, is_published: bool) -> List[Blog]:
+        pass
+
+    @abstractmethod
     def get_blog_author(self, blog_id: str) -> User:
         pass
 
