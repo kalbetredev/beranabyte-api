@@ -5,10 +5,6 @@ from api.schemas.types.user import User
 from api import app
 
 
-def author(root: Blog) -> User:
-    return app.database.get_blog_author(root.id)
-
-
 @strawberry.type
 class Blog:
     id: strawberry.ID
@@ -22,4 +18,7 @@ class Blog:
     image_url: str
     view_count: str
     content: str
-    author: User = strawberry.field(resolver=author)
+
+    @strawberry.field
+    def author(root: Blog) -> User:
+        return app.database.get_blog_author(root.id)
