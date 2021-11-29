@@ -12,3 +12,7 @@ def get_blogs() -> List[Blog]:
 @strawberry.type
 class BlogQuery:
     blogs: List[Blog] = strawberry.field(resolver=get_blogs)
+
+    @strawberry.field
+    def user_blogs(self, user_id: str) -> List[Blog]:
+        return app.database.get_user_blogs(user_id)
