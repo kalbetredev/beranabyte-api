@@ -17,3 +17,7 @@ class Database(ABC):
     @abstractmethod
     def get_user_blogs(self, user_id: str) -> List[Blog]:
         pass
+
+    @abstractmethod
+    def get_all_topics(self) -> List[str]:
+        pass
