@@ -6,10 +6,11 @@ from strawberry.fastapi import GraphQLRouter
 from api.config.settings import settings
 from api.database.database import Database
 from api.schemas.queries.apiquery import Query
+from api.schemas.mutations.apimutation import Mutation
 from api.utils.logging.logger import Logger
 from api.utils.logging.defaultlogger import DefaultLogger
 
-schema = strawberry.Schema(query=Query)
+schema = strawberry.Schema(query=Query, mutation=Mutation)
 
 graphql_app = GraphQLRouter(schema, graphiql=settings.graphiql)
 
