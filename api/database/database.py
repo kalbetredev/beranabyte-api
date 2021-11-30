@@ -29,3 +29,7 @@ class Database(ABC):
     @abstractmethod
     def get_all_topics(self) -> List[str]:
         pass
+
+    @abstractmethod
+    def create_new_blog(self, new_blog: NewBlog) -> Blog:
+        pass
