@@ -15,6 +15,18 @@ class NewBlog:
     content: str
 
 
+@strawberry.input
+class UpdatedBlog:
+    id: strawberry.ID
+    title: Optional[str] = None
+    topic: Optional[str] = None
+    summary: Optional[str] = None
+    image_url: Optional[str] = None
+    content: Optional[str] = None
+    is_featured: Optional[bool] = None
+    is_published: Optional[bool] = None
+
+
 @strawberry.type
 class Blog(NewBlog):
     id: strawberry.ID

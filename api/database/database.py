@@ -1,7 +1,7 @@
 
 from abc import ABC, abstractmethod
 from typing import List, Union
-from api.schemas.types.blog import Blog, NewBlog
+from api.schemas.types.blog import Blog, NewBlog, UpdatedBlog
 from api.schemas.types.user import User
 
 
@@ -32,4 +32,8 @@ class Database(ABC):
 
     @abstractmethod
     def create_new_blog(self, new_blog: NewBlog) -> Blog:
+        pass
+
+    @abstractmethod
+    def update_blog(self, updated_blog: UpdatedBlog) -> Blog:
         pass

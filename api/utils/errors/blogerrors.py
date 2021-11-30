@@ -21,3 +21,13 @@ class BlogNotFoundError(BaseAPIError):
     @strawberry.field
     def error(self) -> Error:
         return Error(f"The blog with id {self.blog_id} could not be found")
+
+
+@strawberry.type
+class BlogUpdateFailedError(BaseAPIError):
+    def __init__(self, message_detail: Optional[str] = ""):
+        self.message_detail = message_detail
+
+    @strawberry.field
+    def error(self) -> Error:
+        return Error(f"Error occurred trying to update your blog. {self.message_detail}".strip())
