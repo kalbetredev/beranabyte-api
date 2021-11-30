@@ -37,3 +37,15 @@ class Database(ABC):
     @abstractmethod
     def update_blog(self, updated_blog: UpdatedBlog) -> Blog:
         pass
+
+    @abstractmethod
+    def delete_blog(self, blog_id: str):
+        pass
+
+    @abstractmethod
+    def publish_blog(self, blog_id: str):
+        pass
+
+    @abstractmethod
+    def increment_blog_view_count(self, blog_id: str):
+        pass
