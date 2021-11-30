@@ -5,14 +5,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
 from api.config.settings import settings
 from api.database.database import Database
-from api.schemas.query import Query
 from api.schemas.queries.apiquery import Query
+from api.utils.logging.logger import Logger
+from api.utils.logging.defaultlogger import DefaultLogger
 
 schema = strawberry.Schema(query=Query)
 
 graphql_app = GraphQLRouter(schema, graphiql=settings.graphiql)
 
 database: Database = None
+logger: Logger = DefaultLogger()
 
 app = FastAPI()
 app.include_router(graphql_app, prefix='/api')
