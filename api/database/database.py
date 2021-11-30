@@ -1,7 +1,7 @@
 
 from abc import ABC, abstractmethod
-from typing import List
-from api.schemas.types.blog import Blog
+from typing import List, Union
+from api.schemas.types.blog import Blog, NewBlog
 from api.schemas.types.user import User
 
 
@@ -15,7 +15,11 @@ class Database(ABC):
         pass
 
     @abstractmethod
-    def get_blog_author(self, blog_id: str) -> User:
+    def get_blog_by_id(self, blog_id: str) -> Union[Blog, None]:
+        pass
+
+    @abstractmethod
+    def get_blog_author(self, blog_id: str) -> Union[User, None]:
         pass
 
     @abstractmethod
