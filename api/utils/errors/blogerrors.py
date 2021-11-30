@@ -20,7 +20,7 @@ class BlogNotFoundError(BaseAPIError):
 
     @strawberry.field
     def error(self) -> Error:
-        return Error(f"The blog with id {self.blog_id} could not be found")
+        return Error(f"Blog with id {self.blog_id} could not be found")
 
 
 @strawberry.type
