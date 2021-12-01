@@ -5,6 +5,7 @@ from api.database.database import Database
 from api.schemas.types.blog import Blog, NewBlog, UpdatedBlog
 from api.schemas.types.user import User
 from api.utils.errors.apierror import APIError
+from api.utils.errors.blogerrors import BlogNotFound, BlogTitleTaken
 from api.utils.helpers import updateAttributes
 from api.utils.constants import messages
 from random import randint
@@ -78,7 +79,7 @@ class TestDatabase(Database):
         blog = next((blog for blog in blogs if (
             str(blog.id) == updated_blog.id)), None)
         if blog == None:
-            raise APIError(messages.BLOG_NOT_FOUND)
+            raise BlogNotFound()
         try:
             updateAttributes(blog, **updated_blog.__dict__)
         except:
@@ -89,7 +90,7 @@ class TestDatabase(Database):
         blog = next((blog for blog in blogs if (
             str(blog.id) == blog_id)), None)
         if blog == None:
-            raise APIError(messages.BLOG_NOT_FOUND)
+            raise BlogNotFound()
         try:
             blogs.remove(blog)
         except:
