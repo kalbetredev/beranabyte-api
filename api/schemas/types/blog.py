@@ -7,7 +7,7 @@ from api import app
 from api.utils.helpers import updateAttributes
 
 
-@strawberry.type
+@strawberry.interface
 class BlogBase:
     id: strawberry.ID
     title: str
