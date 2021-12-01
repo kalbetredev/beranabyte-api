@@ -68,12 +68,18 @@ class TestDatabase(Database):
         return {blog.topic for blog in blogs}
 
     def create_new_blog(self, new_blog: NewBlog) -> Blog:
+        blog = Blog.fromNewBlog(id=len(blogs), new_blog=new_blog)
+        existingBlog = next((b for b in blogs if (
+            blog.title == b.title)), None)
+
+        if existingBlog != None:
+            raise BlogTitleTaken()
+
         try:
-            blog = Blog.fromNewBlog(id=len(blogs), new_blog=new_blog)
             blogs.append(blog)
+            return blog
         except:
             raise APIError(messages.ERROR_CREATING_BLOG)
-        return blog
 
     def update_blog(self, updated_blog: UpdatedBlog) -> Blog:
         blog = next((blog for blog in blogs if (
