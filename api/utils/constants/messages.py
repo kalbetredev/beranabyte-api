@@ -1,0 +1,7 @@
+DEFAULT_ERROR = "Error occurred trying to fullfill your request. Please try again."
+BLOG_NOT_FOUND = "The blog with the specified id could not be found."
+ERROR_CREATING_BLOG = "An error occurred while trying to create the blog."
+ERROR_UPDATING_BLOG = "An error occurred while trying to update the blog."
+ERROR_DELETING_BLOG = "An error occurred while trying to delete the blog."
+BLOG_TITLE_TAKEN = "The blog title you specified is already taken."
+BLOG_DELETED_SUCCESSFULLY = "Blog deleted successfully"
