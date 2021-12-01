@@ -9,12 +9,13 @@ from api.schemas.queries.apiquery import Query
 from api.schemas.mutations.apimutation import Mutation
 from api.utils.logging.logger import Logger
 from api.utils.logging.defaultlogger import DefaultLogger
+from tests.testdatabase import TestDatabase
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 
 graphql_app = GraphQLRouter(schema, graphiql=settings.graphiql)
 
-database: Database = None
+database: Database = TestDatabase()
 logger: Logger = DefaultLogger()
 
 app = FastAPI()
