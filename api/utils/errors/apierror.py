@@ -8,14 +8,14 @@ class Error:
 
 
 @strawberry.type
-class BaseAPIError(ABC, BaseException):
+class BaseError(ABC, BaseException):
     @abstractmethod
     def error(self) -> Error:
         pass
 
 
 @strawberry.type
-class APIError(BaseAPIError):
+class APIError(BaseError):
     @strawberry.field
     def error(self) -> Error:
         return Error("Error occurred trying to fullfill your request. Please try again.")
