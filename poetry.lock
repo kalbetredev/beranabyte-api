@@ -264,6 +264,20 @@ checkqa-mypy = ["mypy (==v0.761)"]
 testing = ["argcomplete", "hypothesis (>=3.56)", "mock", "nose", "requests", "xmlschema"]
 
 [[package]]
+name = "pytest-asyncio"
+version = "0.16.0"
+description = "Pytest support for asyncio."
+category = "dev"
+optional = false
+python-versions = ">= 3.6"
+
+[package.dependencies]
+pytest = ">=5.4.0"
+
+[package.extras]
+testing = ["coverage", "hypothesis (>=5.7.1)"]
+
+[[package]]
 name = "python-dateutil"
 version = "2.8.2"
 description = "Extensions to the standard Python datetime module"
@@ -339,7 +353,7 @@ full = ["itsdangerous", "jinja2", "python-multipart", "pyyaml", "requests", "gra
 
 [[package]]
 name = "strawberry-graphql"
-version = "0.90.0"
+version = "0.90.2"
 description = "A library for creating GraphQL APIs"
 category = "main"
 optional = false
@@ -419,7 +433,7 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "f061fc5174d965d26095d217b7e1f4a534ed42f0388753b9208bcd90f2be57fd"
+content-hash = "655837094699e36823b566b3f8c8f9daf6afb11f3f9241b85a17208f1977a02c"
 
 [metadata.files]
 anyio = [
@@ -639,6 +653,10 @@ pytest = [
     {file = "pytest-5.4.3-py3-none-any.whl", hash = "sha256:5c0db86b698e8f170ba4582a492248919255fcd4c79b1ee64ace34301fb589a1"},
     {file = "pytest-5.4.3.tar.gz", hash = "sha256:7979331bfcba207414f5e1263b5a0f8f521d0f457318836a7355531ed1a4c7d8"},
 ]
+pytest-asyncio = [
+    {file = "pytest-asyncio-0.16.0.tar.gz", hash = "sha256:7496c5977ce88c34379df64a66459fe395cd05543f0a2f837016e7144391fcfb"},
+    {file = "pytest_asyncio-0.16.0-py3-none-any.whl", hash = "sha256:5f2a21273c47b331ae6aa5b36087047b4899e40f03f18397c0e65fa5cca54e9b"},
+]
 python-dateutil = [
     {file = "python-dateutil-2.8.2.tar.gz", hash = "sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86"},
     {file = "python_dateutil-2.8.2-py2.py3-none-any.whl", hash = "sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9"},
@@ -667,8 +685,8 @@ starlette = [
     {file = "starlette-0.16.0.tar.gz", hash = "sha256:e1904b5d0007aee24bdd3c43994be9b3b729f4f58e740200de1d623f8c3a8870"},
 ]
 strawberry-graphql = [
-    {file = "strawberry-graphql-0.90.0.tar.gz", hash = "sha256:a3e0d79e52ed21f0eea7f6a2b17fd77f443f2a15a198562a25fd78224810304a"},
-    {file = "strawberry_graphql-0.90.0-py3-none-any.whl", hash = "sha256:765c712001639cbc03ebbd64a936c4504b08774c193ee6f6cb89f54a52896625"},
+    {file = "strawberry-graphql-0.90.2.tar.gz", hash = "sha256:454263e4819a80a1a3df28c319d5dc8b41641724c2ab8ccba959082d47245eae"},
+    {file = "strawberry_graphql-0.90.2-py3-none-any.whl", hash = "sha256:708718d75e893b4eb998cccba1cf7ede629ab84c71edbcfdc597608c5604c7f4"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
