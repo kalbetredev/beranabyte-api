@@ -6,31 +6,30 @@ from api.schemas.types.user import User
 from api import app
 
 
+@strawberry.type
+class BlogBase:
+    id: strawberry.ID
+    title: str
+
+
 @strawberry.input
 class NewBlog:
     title: str
-    topic: str
-    summary: str
-    image_url: str
-    content: str
-
-
-@strawberry.input
-class UpdatedBlog:
-    id: strawberry.ID
-    title: Optional[str] = None
     topic: Optional[str] = None
     summary: Optional[str] = None
     image_url: Optional[str] = None
     content: Optional[str] = None
-    is_featured: Optional[bool] = None
+    is_featured: Optional[bool] = False
+
+
+@strawberry.input
+class UpdatedBlog(NewBlog):
+    title: Optional[str] = None
     is_published: Optional[bool] = None
 
 
 @strawberry.type
-class Blog(NewBlog):
-    id: strawberry.ID
-    is_featured: Optional[bool] = False
+class Blog(NewBlog, BlogBase):
     is_published: Optional[bool] = False
     modified_on: Optional[datetime] = datetime.now()
     view_count: Optional[int] = 0
