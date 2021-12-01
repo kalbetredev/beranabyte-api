@@ -4,6 +4,7 @@ import strawberry
 from datetime import datetime
 from api.schemas.types.user import User
 from api import app
+from api.utils.helpers import updateAttributes
 
 
 @strawberry.type
@@ -41,11 +42,6 @@ class Blog(NewBlog, BlogBase):
 
     @classmethod
     def fromNewBlog(cls, id: str, new_blog: NewBlog):
-        return Blog(
-            id=id,
-            title=new_blog.title,
-            topic=new_blog.topic,
-            summary=new_blog.summary,
-            image_url=new_blog.image_url,
-            content=new_blog.content,
-        )
+        blog = Blog(id=id, title=new_blog.title)
+        updateAttributes(blog, **new_blog.__dict__)
+        return blog
