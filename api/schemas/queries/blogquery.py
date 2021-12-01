@@ -25,7 +25,7 @@ class BlogQuery:
     def blog(self, blog_id: str) -> GetBlogResponse:
         blog = app.database.get_blog_by_id(blog_id)
         if blog == None:
-            return BlogNotFound(blog_id)
+            return BlogNotFound()
         else:
             return blog
 
