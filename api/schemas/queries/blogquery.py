@@ -3,12 +3,12 @@ from typing import List, Optional
 from api.schemas.types.blog import Blog
 from typing import List
 from api import app
-from api.utils.errors.blogerrors import BlogNotFoundError
+from api.utils.errors.blogerrors import BlogNotFound
 
 
 GetBlogResponse = strawberry.union(
     "GetBlogResponse",
-    [Blog, BlogNotFoundError]
+    [Blog, BlogNotFound]
 )
 
 
@@ -25,7 +25,7 @@ class BlogQuery:
     def blog(self, blog_id: str) -> GetBlogResponse:
         blog = app.database.get_blog_by_id(blog_id)
         if blog == None:
-            return BlogNotFoundError(blog_id)
+            return BlogNotFound(blog_id)
         else:
             return blog
 
