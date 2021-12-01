@@ -32,7 +32,3 @@ class BlogQuery:
     @strawberry.field
     def topics(self) -> List[str]:
         return app.database.get_all_topics()
-
-    @strawberry.field
-    def user_blogs(self, user_id: str) -> List[Blog]:
-        return app.database.get_user_blogs(user_id)
