@@ -9,7 +9,6 @@ class Error:
     message: str
 
 
-@strawberry.type
 class BaseError(ABC, BaseException):
     @abstractmethod
     def error(self) -> Error:
