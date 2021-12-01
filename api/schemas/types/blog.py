@@ -24,7 +24,7 @@ class NewBlog:
 
 
 @strawberry.input
-class UpdatedBlog(NewBlog):
+class UpdatedBlog(NewBlog, BlogBase):
     title: Optional[str] = None
     is_published: Optional[bool] = None
 
