@@ -102,16 +102,18 @@ class TestDatabase(Database):
         except:
             raise APIError(messages.ERROR_DELETING_BLOG)
 
-    def publish_blog(self, blog_id: str):
+    def publish_blog(self, blog_id: str) -> Blog:
         blog = next((blog for blog in blogs if (
             str(blog.id) == blog_id)), None)
         if blog == None:
-            raise APIError(messages.BLOG_NOT_FOUND)
+            raise BlogNotFound()
         blog.is_published = True
+        return blog
 
-    def increment_blog_view_count(self, blog_id: str):
+    def increment_blog_view_count(self, blog_id: str) -> Blog:
         blog = next((blog for blog in blogs if (
             str(blog.id) == blog_id)), None)
         if blog == None:
-            raise APIError(messages.BLOG_NOT_FOUND)
+            raise BlogNotFound()
         blog.view_count += 1
+        return blog
