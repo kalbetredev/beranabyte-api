@@ -1,14 +1,20 @@
 from dataclasses import dataclass
 from typing import List, Union
 from datetime import datetime
+from pydantic.error_wrappers import ValidationError
+from pydantic.main import BaseModel
+from pydantic.types import constr
 from api.database.database import Database
 from api.schemas.types.blog import Blog, NewBlog, UpdatedBlog
-from api.schemas.types.user import User
+from api.schemas.types.user import User, UserAuth
 from api.utils.errors.apierror import APIError
 from api.utils.errors.blogerrors import BlogNotFound, BlogTitleTaken
+from api.utils.errors.usererrors import EmailAlreadyRegistered
+from api.utils.errors.validationerror import InputValidationError
 from api.utils.helpers import updateAttributes
 from api.utils.constants import messages
 from random import randint
+from pydantic import EmailStr
 
 
 @dataclass
@@ -41,6 +47,11 @@ for i in range(20):
 
 for i in range(1, 5):
     users.append(User(id=f"UU-{i}", email=f"kal{i}@gmail.com"))
+
+
+class UserModel(BaseModel):
+    email: EmailStr
+    password: constr(min_length=5)
 
 
 class TestDatabase(Database):
@@ -121,3 +132,20 @@ class TestDatabase(Database):
     def get_user_by_id(self, user_id: str) -> Union[User, None]:
         return next((user for user in users if (
             str(user.id) == user_id)), None)
+
+    def register_user(self, user: UserAuth) -> User:
+        user_id = f"UU-{users.__len__()}"
+
+        reg_user = next(
+            (usr for usr in users if usr.email == user.email), None)
+        if reg_user != None:
+            raise EmailAlreadyRegistered()
+
+        try:
+            new_user = UserModel(email=user.email, password=user.password)
+        except ValidationError as error:
+            raise InputValidationError.fromPydanticError(error)
+
+        users.append(User(id=user_id, email=new_user.email))
+
+        return users[users.__len__() - 1]
