@@ -13,7 +13,6 @@ GetUserResponse = strawberry.union(
 class UserQuery:
     @strawberry.field
     def user(self, user_id: str) -> GetUserResponse:
-        print(user_id)
         user = app.database.get_user_by_id(user_id)
         if user == None:
             return UserNotFound()
