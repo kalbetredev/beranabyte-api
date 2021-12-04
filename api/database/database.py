@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Union
 from api.schemas.types.blog import Blog, NewBlog, UpdatedBlog
-from api.schemas.types.user import User
+from api.schemas.types.user import User, UserAuth
 
 
 class Database(ABC):
@@ -52,4 +52,8 @@ class Database(ABC):
 
     @abstractmethod
     def get_user_by_id(self, user_id: str) -> Union[User, None]:
+        pass
+
+    @abstractmethod
+    def register_user(self, user: UserAuth) -> User:
         pass
