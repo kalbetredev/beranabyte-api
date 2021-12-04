@@ -8,3 +8,10 @@ class UserNotFound(BaseError):
     @strawberry.field
     def error(self) -> Error:
         return APIError(messages.USER_NOT_FOUND)
+
+
+@strawberry.type
+class EmailAlreadyRegistered(BaseError):
+    @strawberry.field
+    def error(self) -> Error:
+        return APIError(messages.EMAIL_TAKEN)
