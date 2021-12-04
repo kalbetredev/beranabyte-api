@@ -49,3 +49,7 @@ class Database(ABC):
     @abstractmethod
     def increment_blog_view_count(self, blog_id: str):
         pass
+
+    @abstractmethod
+    def get_user_by_id(self, user_id: str) -> Union[User, None]:
+        pass
