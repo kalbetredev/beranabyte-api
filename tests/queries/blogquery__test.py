@@ -1,5 +1,4 @@
 import pytest
-from typing import List
 from api import app
 from api.utils.constants import messages
 from tests.testdatabase import TestDatabase
