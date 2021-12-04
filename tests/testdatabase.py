@@ -40,7 +40,7 @@ for i in range(20):
     authors.append(Author(f"UU-{randint(1,4)}", i))
 
 for i in range(1, 5):
-    users.append(User(f"UU-{i}", f"kal{i}@gmail.com"))
+    users.append(User(id=f"UU-{i}", email=f"kal{i}@gmail.com"))
 
 
 class TestDatabase(Database):
@@ -117,3 +117,7 @@ class TestDatabase(Database):
             raise BlogNotFound()
         blog.view_count += 1
         return blog
+
+    def get_user_by_id(self, user_id: str) -> Union[User, None]:
+        return next((user for user in users if (
+            str(user.id) == user_id)), None)
