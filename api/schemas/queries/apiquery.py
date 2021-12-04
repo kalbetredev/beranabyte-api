@@ -1,7 +1,8 @@
 import strawberry
 from api.schemas.queries.blogquery import BlogQuery
+from api.schemas.queries.userquery import UserQuery
 
 
 @strawberry.type
-class Query(BlogQuery):
+class Query(BlogQuery, UserQuery):
     pass
