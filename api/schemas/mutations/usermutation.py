@@ -14,7 +14,7 @@ RegisterUserResult = strawberry.union(
 @strawberry.type
 class UserMutation:
     @strawberry.mutation
-    def register_new_user(self, user: UserAuth) -> RegisterUserResult:
+    def register_user(self, user: UserAuth) -> RegisterUserResult:
         try:
             return app.database.register_user(user)
         except (EmailAlreadyRegistered, InputValidationError) as error:
