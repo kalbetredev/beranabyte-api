@@ -18,7 +18,7 @@ class BaseError(ABC, BaseException):
 @strawberry.type
 class APIError(BaseError):
     def __init__(self, message: Optional[str] = None) -> None:
-        self.message = message if message != None else messages.DEFAULT_ERROR_MESSAGE
+        self.message = message if message != None else messages.DEFAULT_ERROR
 
     @strawberry.field
     def error(self) -> Error:
