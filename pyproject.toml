@@ -12,7 +12,7 @@ packages = [
 start = "api.app:start_app"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.10"
 fastapi = "^0.70.0"
 motor = "^2.5.1"
 uvicorn = "^0.15.0"
