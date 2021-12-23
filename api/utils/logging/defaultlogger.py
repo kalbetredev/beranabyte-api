@@ -8,12 +8,12 @@ class DefaultLogger(Logger):
         level = logging.ERROR
         self.logger = logging.getLogger("default-logger")
         self.logger.setLevel(level)
-        consoleHandler = logging.StreamHandler()
-        consoleHandler.setLevel(level)
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(level)
         formatter = logging.Formatter(
             '%(levelname)s : %(asctime)s : %(name)s : %(message)s')
-        consoleHandler.setFormatter(formatter)
-        self.logger.addHandler(consoleHandler)
+        console_handler.setFormatter(formatter)
+        self.logger.addHandler(console_handler)
 
     def debug(self, source: str, message: str):
         self.logger.debug(f'{source} : {message}')
