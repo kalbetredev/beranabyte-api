@@ -1,0 +1,4 @@
+USERS_COLLECTION = "users"
+DEVICE_COLLECTION = "devices"
+TOKEN_COLLECTION = "tokens"
+SESSION_COLLECTION = "sessions"
