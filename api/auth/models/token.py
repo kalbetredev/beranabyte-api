@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
-from api.common.pyobjectid import PyObjectId
-from api.schemas.types.auth import UserAuthResponse
+
+from api.auth.models.userauthresponse import UserAuthResponse
+from pydantic import BaseModel
 
 
 class Token(BaseModel):
