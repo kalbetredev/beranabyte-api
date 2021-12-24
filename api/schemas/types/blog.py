@@ -37,7 +37,7 @@ class Blog(NewBlog, BlogBase):
     published_on: Optional[datetime] = None
 
     @strawberry.field
-    def author(root: Blog) -> User:
+    def author(self, root: Blog) -> User:
         return app.database.get_blog_author(root.id)
 
     @classmethod
