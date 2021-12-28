@@ -23,7 +23,7 @@ def test_blogs_query_gets_all_blogs():
     assert result.errors is None
 
     blogs = app.database.get_all_blogs()
-    assert result.data["blogs"] == [{'id': str(blog.id)} for blog in blogs]
+    assert result.data["blogs"] == [{"id": str(blog.id)} for blog in blogs]
 
 
 def test_blogs_query_gets_published_blogs():
@@ -41,7 +41,8 @@ def test_blogs_query_gets_published_blogs():
 
     blogs = app.database.get_all_blogs()
     assert result.data["blogs"] == [
-        {'id': str(blog.id)} for blog in blogs if blog.is_published]
+        {"id": str(blog.id)} for blog in blogs if blog.is_published
+    ]
 
 
 def test_blog_query_gets_blog_by_id():
@@ -59,7 +60,7 @@ def test_blog_query_gets_blog_by_id():
 
     assert result.errors is None
 
-    blog = app.database.get_blog_by_id('1')
+    blog = app.database.get_blog_by_id("1")
 
     assert result.data["blog"]["title"] == blog.title
 
@@ -82,7 +83,7 @@ def test_blog_query_gets_author_data():
 
     assert result.errors is None
 
-    blog = app.database.get_blog_by_id('1')
+    blog = app.database.get_blog_by_id("1")
 
     assert result.data["blog"]["author"]["id"] == blog.author().id
     assert result.data["blog"]["author"]["email"] == blog.author().email

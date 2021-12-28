@@ -1,4 +1,3 @@
-
 from abc import ABC, abstractmethod
 from typing import List, Union
 from api.schemas.types.blog import Blog, NewBlog, UpdatedBlog

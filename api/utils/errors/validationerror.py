@@ -20,9 +20,10 @@ class InputValidationError(BaseException):
 
     @classmethod
     def fromPydanticError(cls, error: ValidationError):
-        inputErrors: List[InputError] = []
-        for errorDict in error.errors():
-            inputErrors.append(InputError(
-                errorDict['loc'][0], errorDict['msg']))
+        input_errors: List[InputError] = []
+        for error_dict in error.errors():
+            input_errors.append(
+                InputError(error_dict["loc"][0], error_dict["msg"]),
+            )
 
-        return InputValidationError(inputErrors)
+        return InputValidationError(input_errors)

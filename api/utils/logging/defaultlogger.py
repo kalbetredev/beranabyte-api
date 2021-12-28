@@ -15,24 +15,21 @@ class DefaultLogger(Logger):
             console_handler = logging.StreamHandler()
             console_handler.setLevel(level)
             formatter = logging.Formatter(
-                '%(levelname)s : %(asctime)s : %(name)s : %(message)s')
+                "%(levelname)s : %(asctime)s : %(name)s : %(message)s"
+            )
             console_handler.setFormatter(formatter)
             cls._instance.logger.addHandler(console_handler)
 
         return cls._instance
 
     def debug(self, source: str, message: str):
-        self._instance.logger.debug(
-            f'{source} : {message}'.replace('\n', ' - '))
+        self._instance.logger.debug(f"{source} : {message}".replace("\n", " - "))
 
     def info(self, source: str, message: str):
-        self._instance.logger.info(
-            f'{source} : {message}'.replace('\n', ' - '))
+        self._instance.logger.info(f"{source} : {message}".replace("\n", " - "))
 
     def warning(self, source: str, message: str):
-        self._instance.logger.warning(
-            f'{source} : {message}'.replace('\n', ' - '))
+        self._instance.logger.warning(f"{source} : {message}".replace("\n", " - "))
 
     def error(self, source: str, message: str):
-        self._instance.logger.error(
-            f'{source} : {message}'.replace('\n', ' - '))
+        self._instance.logger.error(f"{source} : {message}".replace("\n", " - "))

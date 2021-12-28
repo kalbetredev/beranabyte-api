@@ -1,8 +1,11 @@
 from logging import Logger
 
 import motor.motor_asyncio
-from api.auth.constants import (DEVICE_COLLECTION, SESSION_COLLECTION,
-                                TOKEN_COLLECTION)
+from api.auth.constants import (
+    DEVICE_COLLECTION,
+    SESSION_COLLECTION,
+    TOKEN_COLLECTION,
+)
 from api.auth.models.device import Device
 from api.auth.models.session import Session
 from api.auth.models.token import Token
@@ -14,7 +17,8 @@ class AuthDatabase:
     def __init__(self, logger=DefaultLogger()):
         self.logger: Logger = logger
         self.client = motor.motor_asyncio.AsyncIOMotorClient(
-            settings.mongodb_url)
+            settings.mongodb_url,
+        )
         self.auth_db = self.client[settings.auth_db_name]
         self.devices_collection = self.auth_db[DEVICE_COLLECTION]
         self.tokens_collection = self.auth_db[TOKEN_COLLECTION]

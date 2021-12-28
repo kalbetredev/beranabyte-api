@@ -17,7 +17,7 @@ class Token(BaseModel):
             user_id=user.user_id,
             refresh_token=user.refresh_token,
             issued_on=datetime.now(),
-            is_revoked=False
+            is_revoked=False,
         )
 
     class Config:

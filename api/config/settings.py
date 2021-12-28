@@ -16,10 +16,10 @@ class Settings(BaseSettings):
 
     def get_google_application_credentials(self):
         decoded = base64.b64decode(self.google_application_credentials)
-        return json.loads(decoded.decode('ascii'))
+        return json.loads(decoded.decode("ascii"))
 
     class Config:
-        env_file = '.env'
+        env_file = ".env"
 
 
 settings = Settings()

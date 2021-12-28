@@ -18,8 +18,11 @@ from api.config.settings import settings
 from api.database.database import Database
 from api.schemas.mutations.apimutation import Mutation
 from api.schemas.queries.apiquery import Query
-from api.utils.constants.messages import (INVALID_LOGIN_INPUTS, SIGNIN_FAILED,
-                                          SIGNUP_FAILED)
+from api.utils.constants.messages import (
+    INVALID_LOGIN_INPUTS,
+    SIGNIN_FAILED,
+    SIGNUP_FAILED,
+)
 from api.utils.logging.defaultlogger import DefaultLogger
 from api.utils.logging.logger import Logger
 
@@ -32,79 +35,72 @@ logger: Logger = DefaultLogger()
 auth = Auth()
 
 app = FastAPI()
-app.include_router(graphql_app, prefix='/api')
+app.include_router(graphql_app, prefix="/api")
 
-origins = [
-    settings.client_url
-]
+origins = [settings.client_url]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=['*'],
-    allow_headers=['*']
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-@app.post('/signup')
-async def signup(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), user_agent: Optional[str] = Header(None)):
+@app.post("/signup")
+async def signup(
+    request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    user_agent: Optional[str] = Header(None),
+):
     try:
         user_auth = UserAuth(
             email=form_data.username,
             password=form_data.password,
             user_agent=user_agent,
-            ip=request.client.host
+            ip=request.client.host,
         )
         response = await auth.signup(user_auth)
         return response.get_json()
     except ValidationError as error:
-        return {
-            "error": parse_validation_error(error)
-        }
+        return {"error": parse_validation_error(error)}
     except AuthError as error:
         logger.error(__name__, error.message)
-        return {
-            "error": error.message
-        }
+        return {"error": error.message}
     except Exception as error:
         logger.error(__name__, error)
-        return {
-            "error": SIGNUP_FAILED
-        }
+        return {"error": SIGNUP_FAILED}
 
 
-@app.post('/signin')
-async def signin(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), user_agent: Optional[str] = Header(None)):
+@app.post("/signin")
+async def signin(
+    request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    user_agent: Optional[str] = Header(None),
+):
     try:
         user_auth = UserAuth(
             email=form_data.username,
             password=form_data.password,
             user_agent=user_agent,
-            ip=request.client.host
+            ip=request.client.host,
         )
         response = await auth.signin(user_auth)
         return response.get_json()
     except ValidationError as error:
-        return {
-            "error": INVALID_LOGIN_INPUTS
-        }
+        return {"error": INVALID_LOGIN_INPUTS}
     except AuthError as error:
         logger.error(__name__, error.message)
-        return {
-            "error": error.message
-        }
+        return {"error": error.message}
     except Exception as error:
         logger.error(__name__, error)
-        return {
-            "error": SIGNIN_FAILED
-        }
+        return {"error": SIGNIN_FAILED}
 
 
-@app.get('/blog')
+@app.get("/blog")
 def get_blog(token: str = Depends(oauth2_scheme)):
     return {"token": token}
 

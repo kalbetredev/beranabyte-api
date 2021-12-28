@@ -26,6 +26,7 @@ requests = "^2.26.0"
 python-multipart = "^0.0.5"
 geocoder = "^1.38.1"
 user-agents = "^2.2.0"
+black = "^21.12b0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

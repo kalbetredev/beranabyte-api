@@ -3,10 +3,7 @@ from api.schemas.types.user import User
 from api.utils.errors.usererrors import UserNotFound
 from api import app
 
-GetUserResponse = strawberry.union(
-    "GetUserResponse",
-    [User, UserNotFound]
-)
+GetUserResponse = strawberry.union("GetUserResponse", [User, UserNotFound])
 
 
 @strawberry.type

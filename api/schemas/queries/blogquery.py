@@ -6,10 +6,7 @@ from api import app
 from api.utils.errors.blogerrors import BlogNotFound
 
 
-GetBlogResponse = strawberry.union(
-    "GetBlogResponse",
-    [Blog, BlogNotFound]
-)
+GetBlogResponse = strawberry.union("GetBlogResponse", [Blog, BlogNotFound])
 
 
 @strawberry.type

@@ -16,7 +16,12 @@ class Device(BaseModel):
     last_used_on: datetime
     location: str
 
-    def __init__(self, user_id: str, user_auth: UserAuth, user_agent: UserAgent):
+    def __init__(
+        self,
+        user_id: str,
+        user_auth: UserAuth,
+        user_agent: UserAgent,
+    ):
         user_location = geocoder.ip(user_auth.ip).city
         super().__init__(
             user_id=user_id,
@@ -25,7 +30,7 @@ class Device(BaseModel):
             browser=user_agent.get_browser(),
             os=user_agent.get_os(),
             last_used_on=datetime.now(),
-            location=user_location if user_location is not None else ""
+            location=user_location if user_location is not None else "",
         )
 
     class Config:

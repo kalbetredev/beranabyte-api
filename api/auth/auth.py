@@ -20,7 +20,9 @@ class Auth:
     async def signup(self, user_auth: UserAuth) -> UserAuthResponse:
         try:
             user: UserAuthResponse = admin.signup(
-                user_auth.email, user_auth.password)
+                user_auth.email,
+                user_auth.password,
+            )
             user_agent = parse_user_agent(user_auth.user_agent)
 
             device = Device(user.user_id, user_auth, user_agent)
@@ -32,7 +34,7 @@ class Auth:
             session = Session(
                 user_id=user.user_id,
                 device_id=str(device_id),
-                token_id=str(token_id)
+                token_id=str(token_id),
             )
 
             await self.auth_db.add_session(session)
@@ -46,7 +48,9 @@ class Auth:
     async def signin(self, user_auth: UserAuth) -> UserAuthResponse:
         try:
             user: UserAuthResponse = admin.signin(
-                user_auth.email, user_auth.password)
+                user_auth.email,
+                user_auth.password,
+            )
             user_agent = parse_user_agent(user_auth.user_agent)
 
             device = Device(user.user_id, user_auth, user_agent)
@@ -58,7 +62,7 @@ class Auth:
             session = Session(
                 user_id=user.user_id,
                 device_id=str(device_id),
-                token_id=str(token_id)
+                token_id=str(token_id),
             )
 
             await self.auth_db.add_session(session)

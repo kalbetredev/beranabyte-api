@@ -1,4 +1,4 @@
-def updateAttributes(object, **kwargs):
+def update_attributes(object, **kwargs):
     for attr, value in kwargs.items():
         if value:
             setattr(object, attr, value)

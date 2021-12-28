@@ -8,18 +8,16 @@ from api import app
 
 
 CreateNewBlogResult = strawberry.union(
-    "CreateNewBlogResult",
-    [Blog, BlogTitleTaken, APIError]
+    "CreateNewBlogResult", [Blog, BlogTitleTaken, APIError]
 )
 
 ModifyBlogResult = strawberry.union(
     "ModifyBlogResult",
-    [Blog, BlogNotFound, APIError]
+    [Blog, BlogNotFound, APIError],
 )
 
 DeleteBlogResult = strawberry.union(
-    "DeleteBlogResult",
-    [Success, BlogNotFound, APIError]
+    "DeleteBlogResult", [Success, BlogNotFound, APIError]
 )
 
 
