@@ -54,7 +54,7 @@ async def test_create_new_blog_mutation_should_return_blog_title_taken_error():
         } 
     """
 
-    response = await app.schema.execute(
+    await app.schema.execute(
         mutation,
         variable_values={
             "newBlog": {
