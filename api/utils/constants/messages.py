@@ -15,3 +15,4 @@ ACCOUNT_DISABLED = "This account has been disabled. Please contact beranabyte.co
 SIGNUP_FAILED = "Error occurred trying to create your account. Please try again"
 SIGNIN_FAILED = "Error occurred during signin. Please try again"
 EMAIL_EXISTS = "The email address is already in use by another account."
+AUTHENTICATION_FAILED = "Failed to authenticate the user"
