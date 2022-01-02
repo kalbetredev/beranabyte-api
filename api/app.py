@@ -63,8 +63,7 @@ async def signup(
             user_agent=user_agent,
             ip=request.client.host,
         )
-        response = await auth.signup(user_auth)
-        return response.get_json()
+        return await auth.signup(user_auth)
     except ValidationError as error:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
@@ -96,8 +95,7 @@ async def signin(
             user_agent=user_agent,
             ip=request.client.host,
         )
-        response = await auth.signin(user_auth)
-        return response.get_json()
+        return await auth.signin(user_auth)
     except ValidationError as error:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST, detail=INVALID_LOGIN_INPUTS
