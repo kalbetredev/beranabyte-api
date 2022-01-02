@@ -1,8 +1,8 @@
 from typing import Optional
-
+from http import HTTPStatus
 import strawberry
 import uvicorn
-from fastapi import Depends, FastAPI, Header, Request
+from fastapi import Depends, FastAPI, Header, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.security.oauth2 import OAuth2PasswordBearer
@@ -66,13 +66,21 @@ async def signup(
         response = await auth.signup(user_auth)
         return response.get_json()
     except ValidationError as error:
-        return {"error": parse_validation_error(error)}
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail={"error": parse_validation_error(error)},
+        )
     except AuthError as error:
         logger.error(__name__, error.message)
-        return {"error": error.message}
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=error.message,
+        )
     except Exception as error:
         logger.error(__name__, error)
-        return {"error": SIGNUP_FAILED}
+        raise HTTPException(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=SIGNUP_FAILED
+        )
 
 
 @app.post("/signin")
@@ -91,13 +99,20 @@ async def signin(
         response = await auth.signin(user_auth)
         return response.get_json()
     except ValidationError as error:
-        return {"error": INVALID_LOGIN_INPUTS}
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST, detail=INVALID_LOGIN_INPUTS
+        )
     except AuthError as error:
         logger.error(__name__, error.message)
-        return {"error": error.message}
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=error.message,
+        )
     except Exception as error:
         logger.error(__name__, error)
-        return {"error": SIGNIN_FAILED}
+        raise HTTPException(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=SIGNIN_FAILED
+        )
 
 
 @app.get("/blog")
