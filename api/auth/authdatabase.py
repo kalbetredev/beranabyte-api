@@ -9,7 +9,7 @@ from api.auth.constants import (
 )
 from api.auth.models.device import Device
 from api.auth.models.session import Session
-from api.auth.models.token import UserToken
+from api.auth.models.usertoken import UserToken
 from api.config.settings import settings
 from api.database.databaseerror import DatabaseError
 from api.utils.logging.defaultlogger import DefaultLogger
