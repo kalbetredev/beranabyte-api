@@ -47,10 +47,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="signin")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/signin")
 
 
-@app.post("/signup")
+@app.post("/auth/signup")
 async def signup(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -82,7 +82,7 @@ async def signup(
         )
 
 
-@app.post("/signin")
+@app.post("/auth/signin")
 async def signin(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
