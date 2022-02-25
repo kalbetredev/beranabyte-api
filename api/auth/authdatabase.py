@@ -59,3 +59,14 @@ class AuthDatabase:
         except Exception as error:
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to Save Session to Database")
+
+    async def get_user_token(self, refresh_token: str) -> UserToken | None:
+        try:
+            document = await self.user_tokens_collection.find_one(
+                {"api_refresh_token": refresh_token}
+            )
+            if document is not None:
+                return UserToken(**document)
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to get the specified refresh token")
