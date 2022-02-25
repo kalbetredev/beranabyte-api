@@ -1,11 +1,11 @@
 from datetime import datetime
 from typing import Optional
+from api.auth.models.mongomodel import MongoModel
 
 from api.auth.models.userauthresponse import UserAuthResponse
-from pydantic import BaseModel
 
 
-class UserToken(BaseModel):
+class UserToken(MongoModel):
     user_id: str
     api_refresh_token: str
     firebase_refresh_token: str
@@ -13,11 +13,12 @@ class UserToken(BaseModel):
     is_revoked: bool
     used_on: Optional[datetime] = None
 
-    def __init__(self, user: UserAuthResponse, api_refresh_token: str):
-        super().__init__(
-            user_id=user.user_id,
+    @staticmethod
+    def from_user_auth(user_auth: UserAuthResponse, api_refresh_token: str):
+        return UserToken(
+            user_id=user_auth.user_id,
             api_refresh_token=api_refresh_token,
-            firebase_refresh_token=user.refresh_token,
+            firebase_refresh_token=user_auth.refresh_token,
             issued_on=datetime.now(),
             is_revoked=False,
         )
