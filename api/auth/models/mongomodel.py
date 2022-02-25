@@ -1,3 +1,4 @@
+import datetime
 from pydantic import BaseModel, Field
 
 from api.auth.models.pyobjectid import PyObjectId
@@ -10,4 +11,5 @@ class MongoModel(BaseModel):
         allow_population_by_field_name = True
         json_encoders = {
             PyObjectId: str,
+            datetime: lambda dt: dt.isoformat(),
         }
