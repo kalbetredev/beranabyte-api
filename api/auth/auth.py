@@ -40,7 +40,7 @@ class Auth:
             )
             await self.auth_db.add_refresh_token(refresh_token)
 
-            user_token = UserToken(user, refresh_token.value)
+            user_token = UserToken.from_user_auth(user, refresh_token.value)
             user_token_id = await self.auth_db.add_user_token(user_token)
 
             session = Session(
