@@ -1,10 +1,8 @@
-from pydantic import BaseModel
+from api.auth.models.mongomodel import MongoModel
+from api.auth.models.pyobjectid import PyObjectId
 
 
-class Session(BaseModel):
+class Session(MongoModel):
     user_id: str
-    device_id: str
-    token_id: str
-
-    class Config:
-        allow_population_by_field_name = True
+    device_id: PyObjectId
+    token_id: PyObjectId
