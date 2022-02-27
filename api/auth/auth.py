@@ -38,15 +38,15 @@ class Auth:
                 user_id=user.user_id,
                 created_by_ip=user_auth.ip,
             )
-            await self.auth_db.add_refresh_token(refresh_token)
+            refresh_token_id = await self.auth_db.add_refresh_token(refresh_token)
 
-            user_token = UserToken.from_user_auth(user, refresh_token.value)
+            user_token = UserToken.from_user_auth(user, refresh_token_id)
             user_token_id = await self.auth_db.add_user_token(user_token)
 
             session = Session(
                 user_id=user.user_id,
-                device_id=str(device_id),
-                token_id=str(user_token_id),
+                device_id=device_id,
+                token_id=user_token_id,
             )
             await self.auth_db.add_session(session)
 
