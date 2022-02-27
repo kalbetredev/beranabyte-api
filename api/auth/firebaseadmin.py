@@ -51,7 +51,7 @@ def signup(email, password) -> UserAuthResponse:
             else:
                 raise AuthError(SIGNUP_FAILED)
 
-        return UserAuthResponse.from_response(response.json())
+        return UserAuthResponse.from_response(response)
     except AuthError as error:
         raise error
     except Exception as error:
@@ -79,7 +79,7 @@ def signin(email, password) -> UserAuthResponse:
             else:
                 raise AuthError(SIGNIN_FAILED)
 
-        return UserAuthResponse.from_response(response.json())
+        return UserAuthResponse.from_response(response)
     except AuthError as error:
         raise error
     except Exception as error:
@@ -101,6 +101,6 @@ def refresh_id_token(refresh_token: str):
             message = parse_token_error_message(response)
             raise AuthError(message)
 
-        return UserAuthResponse.from_response(response.json())
+        return UserAuthResponse.from_response(response)
     except Exception as error:
         logger.error(__name__, error)
