@@ -100,6 +100,24 @@ class AuthDatabase:
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to revoke the specified refresh token")
 
+    async def revoke_user_token(
+        self,
+        token_id: str,
+    ) -> bool:
+        try:
+            result = await self.user_tokens_collection.update_one(
+                {"_id": token_id},
+                {
+                    "$set": {
+                        "is_revoked": True,
+                    }
+                },
+            )
+            return result.modified_count > 0
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to revoke the specified user token")
+
     async def revoke_all_refresh_tokens(
         self,
         user_id: str,
@@ -119,3 +137,18 @@ class AuthDatabase:
         except Exception as error:
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to revoke the specified refresh token")
+
+    async def revoke_all_user_tokens(self, user_id: str):
+        try:
+            result = await self.user_tokens_collection.update_many(
+                {"user_id": user_id},
+                {
+                    "$set": {
+                        "is_revoked": True,
+                    }
+                },
+            )
+            return result.modified_count > 0
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to revoke the specified user token")
