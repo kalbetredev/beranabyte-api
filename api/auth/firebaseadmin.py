@@ -104,3 +104,10 @@ def refresh_id_token(refresh_token: str):
         return UserAuthResponse.from_response(response)
     except Exception as error:
         logger.error(__name__, error)
+
+
+def revoke_refresh_token(user_id: str):
+    try:
+        auth.revoke_refresh_tokens(user_id)
+    except Exception as error:
+        logger.error(__name__, error)
