@@ -10,6 +10,6 @@ class MongoModel(BaseModel):
     class Config:
         allow_population_by_field_name = True
         json_encoders = {
-            PyObjectId: str,
+            PyObjectId: lambda x: str(x),
             datetime: lambda dt: dt.isoformat(),
         }
