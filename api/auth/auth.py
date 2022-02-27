@@ -17,6 +17,7 @@ from api.utils.constants.messages import (
 from api.utils.logging.defaultlogger import DefaultLogger
 from api.utils.logging.logger import Logger
 from user_agents import parse as parse_user_agent
+from user_agents.parsers import UserAgent
 
 
 class Auth:
@@ -30,8 +31,8 @@ class Auth:
         user_auth: UserAuth,
     ):
         try:
-            user_agent = parse_user_agent(user_auth.user_agent)
-            device = Device(user.user_id, user_auth, user_agent)
+            user_agent: UserAgent = parse_user_agent(user_auth.user_agent)
+            device = Device.from_user(user.user_id, user_auth.ip, user_agent)
             device_id = await self.auth_db.add_device(device)
 
             refresh_token = RefreshToken(
