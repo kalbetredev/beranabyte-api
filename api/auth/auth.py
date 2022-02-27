@@ -64,7 +64,7 @@ class Auth:
                 user_auth.email,
                 user_auth.password,
             )
-            return self.authenticate_user(user, user_auth)
+            return await self.authenticate_user(user, user_auth)
 
         except AuthError as error:
             raise error
@@ -78,7 +78,7 @@ class Auth:
                 user_auth.email,
                 user_auth.password,
             )
-            return self.authenticate_user(user, user_auth)
+            return await self.authenticate_user(user, user_auth)
 
         except AuthError as error:
             raise error
