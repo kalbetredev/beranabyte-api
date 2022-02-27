@@ -7,13 +7,13 @@ from api.auth.constants import (
     SESSION_COLLECTION,
     USER_TOKEN_COLLECTION,
 )
+from api.auth.models.refreshtoken import RefreshToken
 from api.auth.models.device import Device
 from api.auth.models.session import Session
 from api.auth.models.usertoken import UserToken
 from api.config.settings import settings
 from api.database.databaseerror import DatabaseError
 from api.utils.logging.defaultlogger import DefaultLogger
-from firebase_admin.credentials import RefreshToken
 
 
 class AuthDatabase:
@@ -69,4 +69,53 @@ class AuthDatabase:
                 return UserToken(**document)
         except Exception as error:
             self.logger.error(__name__, error)
+            raise DatabaseError("Unable to get the specified user token")
+
+    async def get_refresh_token(self, token: str) -> RefreshToken | None:
+        try:
+            document = await self.refresh_token_collection.find_one({"value": token})
+            if document is not None:
+                return RefreshToken(**document)
+        except Exception as error:
+            self.logger.error(__name__, error)
             raise DatabaseError("Unable to get the specified refresh token")
+
+    async def revoke_refersh_token(
+        self,
+        token_id: str,
+        revoked_by: str,
+    ) -> bool:
+        try:
+            result = await self.refresh_token_collection.update_one(
+                {"_id": token_id},
+                {
+                    "$set": {
+                        "is_revoked": True,
+                        "revoked_by": revoked_by,
+                    }
+                },
+            )
+            return result.modified_count > 0
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to revoke the specified refresh token")
+
+    async def revoke_all_refresh_tokens(
+        self,
+        user_id: str,
+        revoked_by: str,
+    ):
+        try:
+            result = await self.refresh_token_collection.update_many(
+                {"user_id": user_id},
+                {
+                    "$set": {
+                        "is_revoked": True,
+                        "revoked_by": revoked_by,
+                    }
+                },
+            )
+            return result.modified_count > 0
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to revoke the specified refresh token")
