@@ -8,11 +8,12 @@ from api.auth.models.userauthresponse import UserAuthResponse
 
 class UserToken(MongoModel):
     user_id: str
+    access_token: str
     api_refresh_token: PyObjectId
     firebase_refresh_token: str
     issued_on: datetime
     is_revoked: bool
-    used_on: Optional[datetime] = None
+    last_used_on: Optional[datetime] = None
 
     @staticmethod
     def from_user_auth(
@@ -21,6 +22,7 @@ class UserToken(MongoModel):
     ):
         return UserToken(
             user_id=user_auth.user_id,
+            access_token=user_auth.id_token,
             api_refresh_token=api_refresh_token,
             firebase_refresh_token=user_auth.refresh_token,
             issued_on=datetime.now(),
