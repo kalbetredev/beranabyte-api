@@ -22,6 +22,7 @@ from api.utils.constants.messages import (
     INVALID_LOGIN_INPUTS,
     SIGNIN_FAILED,
     SIGNUP_FAILED,
+    TOKEN_REFRESH_FAILED,
 )
 from api.utils.logging.defaultlogger import DefaultLogger
 from api.utils.logging.logger import Logger
@@ -110,6 +111,31 @@ async def signin(
         logger.error(__name__, error)
         raise HTTPException(
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=SIGNIN_FAILED
+        )
+
+
+@app.post("/auth/refresh")
+async def refresh_token(
+    request: Request,
+    refresh_token: str,
+    user_agent: Optional[str] = Header(None),
+):
+    try:
+        return await auth.refresh_token(
+            refresh_token,
+            user_agent,
+            request.client.host,
+        )
+    except AuthError as error:
+        logger.error(__name__, error.message)
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail=error.message,
+        )
+    except Exception as error:
+        logger.error(__name__, error)
+        raise HTTPException(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=TOKEN_REFRESH_FAILED
         )
 
 
