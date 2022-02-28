@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 from api.auth.models.mongomodel import MongoModel
 from api.auth.models.pyobjectid import PyObjectId
 
@@ -13,7 +12,6 @@ class UserToken(MongoModel):
     firebase_refresh_token: str
     issued_on: datetime
     is_revoked: bool
-    last_used_on: Optional[datetime] = None
 
     @staticmethod
     def from_user_auth(
