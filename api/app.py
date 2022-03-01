@@ -141,10 +141,5 @@ async def refresh_token(
         )
 
 
-@app.get("/blog")
-def get_blog(token: str = Depends(oauth2_scheme)):
-    return {"token": token}
-
-
 def start_app():
     uvicorn.run("api.app:app", host="0.0.0.0", port=8000, reload=True)
