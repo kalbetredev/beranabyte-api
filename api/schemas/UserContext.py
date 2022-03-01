@@ -29,5 +29,5 @@ async def user_context_dependency(request: Request) -> UserContext:
         return UserContext(None)
 
 
-def get_user_context(user_context=Depends(user_context_dependency)):
+def current_user_context(user_context=Depends(user_context_dependency)):
     return user_context
