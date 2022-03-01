@@ -19,3 +19,6 @@ TOKEN_REFRESH_FAILED = (
     "Error occurred while refreshing your access token. Please try again"
 )
 TOKEN_GENERATION_FAILED = "Error occurred while generating authentication tokens."
+INVALID_CREDENTIAL = "Invalid user credential."
+NOT_AUTHENTICATED = "User not authenticated."
+USER_NOT_FOUND = "No user record found."
