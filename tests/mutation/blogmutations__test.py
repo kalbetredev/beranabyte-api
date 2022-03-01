@@ -29,9 +29,9 @@ async def test_create_new_blog_mutation():
                 "topic": "topic 3",
                 "summary": "new summary",
                 "imageUrl": "",
-                "content": "blog content"
+                "content": "blog content",
             }
-        }
+        },
     )
 
     assert response.errors is None
@@ -54,13 +54,13 @@ async def test_create_new_blog_mutation_should_return_blog_title_taken_error():
         } 
     """
 
-    response = await app.schema.execute(
+    await app.schema.execute(
         mutation,
         variable_values={
             "newBlog": {
                 "title": "new blog",
             }
-        }
+        },
     )
 
     response = await app.schema.execute(
@@ -69,11 +69,13 @@ async def test_create_new_blog_mutation_should_return_blog_title_taken_error():
             "newBlog": {
                 "title": "new blog",
             }
-        }
+        },
     )
 
     assert response.errors is None
-    assert response.data["createNewBlog"]["error"]["message"] == messages.BLOG_TITLE_TAKEN
+    assert (
+        response.data["createNewBlog"]["error"]["message"] == messages.BLOG_TITLE_TAKEN
+    )
 
 
 @pytest.mark.asyncio
@@ -95,7 +97,7 @@ async def test_update_blog_mutation():
                 "id": "0",
                 "title": "updated blog",
             }
-        }
+        },
     )
 
     assert response.errors is None
@@ -125,7 +127,7 @@ async def test_update_blog_mutation_should_return_blog_not_found_error():
                 "id": "aa",
                 "title": "updated blog",
             }
-        }
+        },
     )
 
     assert response.errors is None
@@ -144,12 +146,7 @@ async def test_delete_blog_mutation():
         } 
     """
 
-    response = await app.schema.execute(
-        mutation,
-        variable_values={
-            "blogId": "7"
-        }
-    )
+    response = await app.schema.execute(mutation, variable_values={"blogId": "7"})
 
     assert response.errors is None
     assert response.data["deleteBlog"]["message"] == messages.BLOG_DELETED_SUCCESSFULLY
@@ -169,12 +166,7 @@ async def test_delete_blog_mutation_should_return_blog_not_found_error():
         } 
     """
 
-    response = await app.schema.execute(
-        mutation,
-        variable_values={
-            "blogId": "xx"
-        }
-    )
+    response = await app.schema.execute(mutation, variable_values={"blogId": "xx"})
 
     assert response.errors is None
     assert response.data["deleteBlog"]["error"]["message"] == messages.BLOG_NOT_FOUND
@@ -194,18 +186,10 @@ async def test_publish_blog_mutation():
     """
 
     blog_id = "5"
-    response = await app.schema.execute(
-        mutation,
-        variable_values={
-            "blogId": blog_id
-        }
-    )
+    response = await app.schema.execute(mutation, variable_values={"blogId": blog_id})
 
     assert response.errors is None
-    assert response.data["publishBlog"] == {
-        "id": blog_id,
-        "isPublished": True
-    }
+    assert response.data["publishBlog"] == {"id": blog_id, "isPublished": True}
 
 
 @pytest.mark.asyncio
@@ -222,12 +206,7 @@ async def test_delete_blog_mutation_should_return_blog_not_found_error():
         } 
     """
 
-    response = await app.schema.execute(
-        mutation,
-        variable_values={
-            "blogId": "xx"
-        }
-    )
+    response = await app.schema.execute(mutation, variable_values={"blogId": "xx"})
 
     assert response.errors is None
     assert response.data["publishBlog"]["error"]["message"] == messages.BLOG_NOT_FOUND
@@ -248,17 +227,12 @@ async def test_increment_view_count_mutation():
     blog_id = "5"
     blog_view_count = app.database.get_blog_by_id(blog_id).view_count
 
-    response = await app.schema.execute(
-        mutation,
-        variable_values={
-            "blogId": blog_id
-        }
-    )
+    response = await app.schema.execute(mutation, variable_values={"blogId": blog_id})
 
     assert response.errors is None
     assert response.data["incrementBlogViewCount"] == {
         "id": blog_id,
-        "viewCount": blog_view_count + 1
+        "viewCount": blog_view_count + 1,
     }
 
 
@@ -276,12 +250,10 @@ async def test_increment_view_count_mutation_should_return_blog_not_found_error(
         } 
     """
 
-    response = await app.schema.execute(
-        mutation,
-        variable_values={
-            "blogId": "xx"
-        }
-    )
+    response = await app.schema.execute(mutation, variable_values={"blogId": "xx"})
 
     assert response.errors is None
-    assert response.data["incrementBlogViewCount"]["error"]["message"] == messages.BLOG_NOT_FOUND
+    assert (
+        response.data["incrementBlogViewCount"]["error"]["message"]
+        == messages.BLOG_NOT_FOUND
+    )

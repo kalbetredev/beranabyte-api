@@ -4,25 +4,32 @@ from api.utils.logging.logger import Logger
 
 
 class DefaultLogger(Logger):
-    def __init__(self) -> None:
-        level = logging.ERROR
-        self.logger = logging.getLogger("default-logger")
-        self.logger.setLevel(level)
-        consoleHandler = logging.StreamHandler()
-        consoleHandler.setLevel(level)
-        formatter = logging.Formatter(
-            '%(levelname)s : %(asctime)s : %(name)s : %(message)s')
-        consoleHandler.setFormatter(formatter)
-        self.logger.addHandler(consoleHandler)
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(Logger, cls).__new__(cls)
+            level = logging.ERROR
+            cls._instance.logger = logging.getLogger("default-logger")
+            cls._instance.logger.setLevel(level)
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(level)
+            formatter = logging.Formatter(
+                "%(levelname)s : %(asctime)s : %(name)s : %(message)s"
+            )
+            console_handler.setFormatter(formatter)
+            cls._instance.logger.addHandler(console_handler)
+
+        return cls._instance
 
     def debug(self, source: str, message: str):
-        self.logger.debug(f'{source} : {message}')
+        self._instance.logger.debug(f"{source} : {message}".replace("\n", " - "))
 
     def info(self, source: str, message: str):
-        self.logger.info(f'{source} : {message}')
+        self._instance.logger.info(f"{source} : {message}".replace("\n", " - "))
 
     def warning(self, source: str, message: str):
-        self.logger.warning(f'{source} : {message}')
+        self._instance.logger.warning(f"{source} : {message}".replace("\n", " - "))
 
     def error(self, source: str, message: str):
-        self.logger.error(f'{source} : {message}')
+        self._instance.logger.error(f"{source} : {message}".replace("\n", " - "))
