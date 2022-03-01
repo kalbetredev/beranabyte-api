@@ -10,9 +10,11 @@ from api.config.settings import settings
 from api.utils.constants.messages import (
     ACCOUNT_DISABLED,
     EMAIL_EXISTS,
+    INVALID_CREDENTIAL,
     INVALID_LOGIN_INPUTS,
     SIGNIN_FAILED,
     SIGNUP_FAILED,
+    USER_NOT_FOUND,
 )
 from api.utils.logging.defaultlogger import DefaultLogger
 from api.utils.logging.logger import Logger
@@ -29,6 +31,32 @@ logger: Logger = DefaultLogger()
 def get_user(uid: str) -> UserRecord:
     user: UserRecord = auth.get_user(uid)
     return user
+
+
+def get_current_user(id_token: str) -> UserRecord:
+    try:
+        endpoint = (
+            f"{settings.auth_api_endpoint}lookup?key={settings.firebase_web_api_key}"
+        )
+        data = {"idToken": id_token}
+        response: Response = requests.post(
+            url=endpoint,
+            data=json.dumps(data),
+            headers=headers,
+        )
+        if response.status_code != 200:
+            firebase_error = parse_firebase_error(response)
+            if firebase_error == FirebaseError.USER_NOT_FOUND:
+                raise AuthError(USER_NOT_FOUND)
+            else:
+                raise AuthError(INVALID_CREDENTIAL)
+
+        return UserRecord(response.json()["users"][0])
+
+    except AuthError as error:
+        raise error
+    except Exception as error:
+        logger.error(__name__, error)
 
 
 def signup(email, password) -> UserAuthResponse:
