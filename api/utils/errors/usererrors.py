@@ -11,7 +11,7 @@ class UserNotFound(BaseError):
 
 
 @strawberry.type
-class EmailAlreadyRegistered(BaseError):
+class UserNotAuthenticated(BaseError):
     @strawberry.field
     def error(self) -> Error:
-        return APIError(messages.EMAIL_TAKEN)
+        return APIError(messages.NOT_AUTHENTICATED)
