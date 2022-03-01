@@ -5,9 +5,9 @@ import uvicorn
 from fastapi import Depends, FastAPI, Header, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
-from fastapi.security.oauth2 import OAuth2PasswordBearer
 from pydantic.error_wrappers import ValidationError
 from strawberry.fastapi import GraphQLRouter
+from api.schemas.UserContext import current_user_context
 from tests.testdatabase import TestDatabase
 
 from api.auth.auth import Auth
@@ -29,14 +29,18 @@ from api.utils.logging.logger import Logger
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 
-graphql_app = GraphQLRouter(schema, graphiql=settings.graphiql)
+graphql_app = GraphQLRouter(
+    schema,
+    graphiql=settings.graphiql,
+    context_getter=current_user_context,
+)
 
 database: Database = TestDatabase()
 logger: Logger = DefaultLogger()
 auth = Auth()
 
 app = FastAPI()
-app.include_router(graphql_app, prefix="/api")
+app.include_router(graphql_app, prefix="/graphql")
 
 origins = [settings.client_url]
 
@@ -47,8 +51,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/signin")
 
 
 @app.post("/auth/signup")
