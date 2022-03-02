@@ -1,4 +1,3 @@
-USERS_COLLECTION = "users"
 DEVICE_COLLECTION = "devices"
 USER_TOKEN_COLLECTION = "user_tokens"
 REFRESH_TOKENS_COLLECTION = "refresh_tokens"
