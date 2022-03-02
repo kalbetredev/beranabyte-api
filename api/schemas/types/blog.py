@@ -3,8 +3,6 @@ from typing import Optional
 import strawberry
 from datetime import datetime
 from api.schemas.types.user import User
-from api import app
-from api.utils.helpers import update_attributes
 
 
 @strawberry.interface
@@ -35,13 +33,4 @@ class Blog(NewBlog, BlogBase):
     modified_on: Optional[datetime] = datetime.now()
     view_count: Optional[int] = 0
     published_on: Optional[datetime] = None
-
-    @strawberry.field
-    def author(self, root: Blog) -> User:
-        return app.database.get_blog_author(root.id)
-
-    @classmethod
-    def fromNewBlog(cls, id: str, new_blog: NewBlog):
-        blog = Blog(id=id, title=new_blog.title)
-        update_attributes(blog, **new_blog.__dict__)
-        return blog
+    author: Optional[User] = None
