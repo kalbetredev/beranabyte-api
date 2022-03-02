@@ -7,15 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic.error_wrappers import ValidationError
 from strawberry.fastapi import GraphQLRouter
-from api.schemas.UserContext import current_user_context
-from tests.testdatabase import TestDatabase
-
+from api.app_context import get_app_context
 from api.auth.auth import Auth
 from api.auth.errors.autherrors import AuthError
 from api.auth.models.userauth import UserAuth
 from api.auth.utils.errorparsers import parse_validation_error
 from api.config.settings import settings
-from api.database.database import Database
 from api.schemas.mutations.apimutation import Mutation
 from api.schemas.queries.apiquery import Query
 from api.utils.constants.messages import (
@@ -32,15 +29,14 @@ schema = strawberry.Schema(query=Query, mutation=Mutation)
 graphql_app = GraphQLRouter(
     schema,
     graphiql=settings.graphiql,
-    context_getter=current_user_context,
+    context_getter=get_app_context,
 )
 
-database: Database = TestDatabase()
 logger: Logger = DefaultLogger()
 auth = Auth()
 
 app = FastAPI()
-app.include_router(graphql_app, prefix="/graphql")
+app.include_router(graphql_app, prefix="/api")
 
 origins = [settings.client_url]
 
