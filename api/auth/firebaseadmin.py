@@ -28,7 +28,7 @@ headers = {"Content-Type": "application/json"}
 logger: Logger = DefaultLogger()
 
 
-def get_user(uid: str) -> UserRecord:
+def get_user_record(uid: str) -> UserRecord:
     user: UserRecord = auth.get_user(uid)
     return user
 
