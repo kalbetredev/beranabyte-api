@@ -8,6 +8,8 @@ from api.auth.models.token import TokenResponse
 from api.auth.models.userauth import UserAuth
 from api.auth.models.userauthresponse import UserAuthResponse
 from api.auth.models.usertoken import UserToken
+from api.database.mongo_database import MongoDatabase
+from api.schemas.types.user import UserMeta, UserRole
 from api.utils.constants.messages import (
     SIGNIN_FAILED,
     SIGNUP_FAILED,
@@ -24,6 +26,7 @@ class Auth:
     def __init__(self, logger=DefaultLogger()):
         self.logger: Logger = logger
         self.auth_db = AuthDatabase()
+        self.main_db = MongoDatabase()
 
     async def signup(self, user_auth: UserAuth) -> TokenResponse:
         try:
@@ -31,6 +34,10 @@ class Auth:
                 user_auth.email,
                 user_auth.password,
             )
+            user_meta = UserMeta(
+                user_id=response.user_id, role=UserRole.USER.value, photo_url=""
+            )
+            await self.main_db.add_user_meta(user_meta)
             return await self.generate_user_token(
                 response=response,
                 user_ip=user_auth.ip,
