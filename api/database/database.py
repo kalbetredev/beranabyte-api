@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Union
 from api.schemas.types.blog import Blog, NewBlog, UpdatedBlog
 from api.schemas.types.user import UserMeta
-from api.database.models import Sort
+from api.database.models import Page, Sort
 
 
 class Database(ABC):
@@ -11,7 +11,12 @@ class Database(ABC):
         self,
         query: dict,
         sort: Sort | None,
+        page: Page,
     ) -> List[Blog]:
+        pass
+
+    @abstractmethod
+    async def get_blogs_count(self) -> int:
         pass
 
     @abstractmethod
