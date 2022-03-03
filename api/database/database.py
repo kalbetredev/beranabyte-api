@@ -1,13 +1,16 @@
 from abc import ABC, abstractmethod
 from typing import List, Union
 from api.schemas.types.blog import Blog, NewBlog, UpdatedBlog
-from api.schemas.types.user import User, UserMeta
+from api.schemas.types.user import UserMeta
+from api.database.models import Sort
 
 
 class Database(ABC):
     @abstractmethod
     async def get_blogs(
-        self, user_id: str | None = None, is_published: bool | None = None
+        self,
+        query: dict,
+        sort: Sort | None,
     ) -> List[Blog]:
         pass
 

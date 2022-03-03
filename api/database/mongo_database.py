@@ -7,6 +7,7 @@ from api.utils.logging.defaultlogger import DefaultLogger
 from logging import Logger
 import motor.motor_asyncio
 from api.config.settings import settings
+from api.database.models import Sort
 
 USERS_META_COLLECTION = "users_meta"
 BLOGS_COLLECTION = "blogs"
@@ -23,9 +24,22 @@ class MongoDatabase(Database):
         self.blogs_collection = self.main_db[BLOGS_COLLECTION]
 
     async def get_blogs(
-        self, user_id: str | None = None, is_published: bool | None = None
+        self,
+        query: dict,
+        sort: Sort | None,
     ) -> List[Blog]:
-        pass
+        try:
+            blogs: List[Blog] = []
+            sort = sort if sort is not None else Sort(key="_id", dir=1)
+            cursor = self.blogs_collection.find(query).sort(sort.key, sort.dir)
+
+            for document in await cursor.to_list(length=1000):
+                blog_id = str(document["_id"])
+                blogs.append(Blog(id=blog_id, title=document["title"]))
+            return blogs
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to get the specified blogs")
 
     async def get_blog(self, blog_id: str) -> Union[Blog, None]:
         pass

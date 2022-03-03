@@ -1,14 +1,24 @@
 from __future__ import annotations
-from typing import Optional
 import strawberry
+from typing import Optional
 from datetime import datetime
 from api.schemas.types.user import User
 
 
-@strawberry.interface
-class BlogBase:
-    id: strawberry.ID
+@strawberry.type
+class Blog:
+    id: str
     title: str
+    topic: Optional[str] = None
+    summary: Optional[str] = None
+    image_url: Optional[str] = None
+    content: Optional[str] = None
+    is_featured: Optional[bool] = False
+    is_published: Optional[bool] = False
+    modified_on: Optional[datetime] = datetime.now()
+    view_count: Optional[int] = 0
+    published_on: Optional[datetime] = None
+    author: Optional[User] = None
 
 
 @strawberry.input
@@ -22,15 +32,6 @@ class NewBlog:
 
 
 @strawberry.input
-class UpdatedBlog(NewBlog, BlogBase):
+class UpdatedBlog(NewBlog):
     title: Optional[str] = None
     is_published: Optional[bool] = None
-
-
-@strawberry.type
-class Blog(NewBlog, BlogBase):
-    is_published: Optional[bool] = False
-    modified_on: Optional[datetime] = datetime.now()
-    view_count: Optional[int] = 0
-    published_on: Optional[datetime] = None
-    author: Optional[User] = None
