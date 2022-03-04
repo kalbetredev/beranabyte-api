@@ -8,6 +8,7 @@ from logging import Logger
 import motor.motor_asyncio
 from api.config.settings import settings
 from api.database.models import Page, Sort
+from pymongo import TEXT
 
 USERS_META_COLLECTION = "users_meta"
 BLOGS_COLLECTION = "blogs"
@@ -22,6 +23,7 @@ class MongoDatabase(Database):
         self.main_db = self.client[settings.main_db_name]
         self.users_meta_collection = self.main_db[USERS_META_COLLECTION]
         self.blogs_collection = self.main_db[BLOGS_COLLECTION]
+        self.blogs_collection.create_index([("$**", TEXT)])
 
     async def get_blogs(
         self,
@@ -51,6 +53,33 @@ class MongoDatabase(Database):
 
     async def get_blogs_count(self) -> int:
         return await self.blogs_collection.count_documents({})
+
+    async def search_blogs(
+        self,
+        text: str,
+        page: Page,
+        max_limit: int,
+    ) -> List[Blog]:
+        try:
+            blogs: List[Blog] = []
+            skip = (page.number - 1) * page.size
+
+            cursor = (
+                self.blogs_collection.find(
+                    {"$text": {"$search": text}, "is_published": True},
+                    {"score": {"$meta": "textScore"}},
+                )
+                .skip(skip)
+                .limit(max_limit)
+                .sort("score", {"$meta": "textScore"})
+            )
+            for document in await cursor.to_list(length=page.size):
+                blog_id = str(document["_id"])
+                blogs.append(Blog(id=blog_id, title=document["title"]))
+            return blogs
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to search for your blogs")
 
     async def get_blog(self, blog_id: str) -> Union[Blog, None]:
         pass

@@ -20,6 +20,15 @@ class Database(ABC):
         pass
 
     @abstractmethod
+    async def search_blogs(
+        self,
+        text: str,
+        page: Page,
+        max_limit: int,
+    ) -> List[Blog]:
+        pass
+
+    @abstractmethod
     async def get_blog(self, blog_id: str) -> Union[Blog, None]:
         pass
 
