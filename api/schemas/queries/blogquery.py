@@ -31,7 +31,7 @@ class BlogQuery:
     async def get_blogs(
         self,
         info: Info,
-        user_id: Optional[str] = None,
+        author_id: Optional[str] = None,
         is_published: Optional[bool] = None,
         sort_by: Optional[str] = None,
         sort_dir: Optional[int] = 1,
@@ -42,20 +42,32 @@ class BlogQuery:
             db: Database = info.context.db
 
             query = {}
-            if user_id:
-                query["user_id"] = user_id
-            if is_published is not None:
-                query["is_published"] = is_published
+            if author_id:
+                query["author_id"] = author_id
+
+            query = {"is_published": True}
+
+            if author_id is not None and not is_published:
+                if (
+                    info.context.current_user is not None
+                    and info.context.current_user.uid == author_id
+                ):
+                    if is_published is None:
+                        del query["is_published"]
+                    else:
+                        query["is_published"] = False
+                elif is_published is not None:
+                    return GetBlogsResult([], page_num=1, page_count=1)
 
             sort = None
             if sort_by is not None:
                 sort = Sort(sort_by, sort_dir)
 
-            page_size = page_size if page_size >= 1 else 10
-            page_count = ceil((await db.get_blogs_count()) / page_size)
-            page_num = 1 if page_num < 1 else page_num
-            page_num = page_count if page_num > page_count else page_num
-            page = Page(number=page_num, size=page_size)
+            (page, page_count) = get_page_with_count(
+                await db.get_blogs_count(),
+                page_size,
+                page_num,
+            )
 
             blogs = await db.get_blogs(query=query, sort=sort, page=page)
             return GetBlogsResult(blogs, page_num=page_num, page_count=page_count)
