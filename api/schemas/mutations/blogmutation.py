@@ -101,12 +101,26 @@ class BlogMutation:
             return APIError()
 
     @strawberry.mutation
-    def increment_blog_view_count(
-        self, blog_id: str, info: Info
-    ) -> Union[Blog, BlogNotFound, APIError]:
+    async def increment_blog_view_count(
+        self, id: str, info: Info
+    ) -> Union[Blog, BlogNotFound, InputValidationError, APIError]:
         try:
             db: Database = info.context.db
-            return db.increment_blog_view_count(blog_id)
+
+            if not ObjectId.is_valid(id):
+                return InputValidationError(
+                    [InputError(input="id", message=messages.INVALID_ID)]
+                )
+            else:
+                existing_blog = await db.get_blog_by_id(id)
+                if existing_blog is None:
+                    return BlogNotFound()
+
+                existing_blog.view_count += 1
+                saved_blog = await db.update_blog(existing_blog)
+                return (
+                    Blog(**saved_blog.dict()) if saved_blog is not None else APIError()
+                )
         except BlogNotFound as error:
             return error
         except Exception as error:
