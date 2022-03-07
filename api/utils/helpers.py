@@ -1,4 +1,5 @@
-def update_attributes(object, **kwargs):
-    for attr, value in kwargs.items():
+def update_attributes(updated, existing) -> None:
+
+    for attr, value in updated.__dict__.items():
         if value:
-            setattr(object, attr, value)
+            setattr(existing, attr, value)
