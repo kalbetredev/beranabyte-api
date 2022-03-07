@@ -1,16 +1,18 @@
+from typing import Union
 import strawberry
 from strawberry.types import Info
 from api.database.database import Database
+from api.database.models.blog_model import BlogModel
 from api.schemas.types.blog import Blog, NewBlog, UpdatedBlog
 from api.utils.errors.apierror import APIError
-from api.utils.errors.blogerrors import BlogNotFound, BlogTitleTaken
+from api.utils.errors.blogerrors import (
+    BlogNotFound,
+    BlogTitleCanNotBeEmpty,
+    BlogTitleTaken,
+)
 from api.schemas.types.responses import Success
 from api.utils.constants import messages
 
-
-CreateNewBlogResult = strawberry.union(
-    "CreateNewBlogResult", [Blog, BlogTitleTaken, APIError]
-)
 
 ModifyBlogResult = strawberry.union(
     "ModifyBlogResult",
@@ -25,12 +27,19 @@ DeleteBlogResult = strawberry.union(
 @strawberry.type
 class BlogMutation:
     @strawberry.mutation
-    def create_new_blog(self, new_blog: NewBlog, info: Info) -> CreateNewBlogResult:
+    async def add_new_blog(
+        self, new_blog: NewBlog, info: Info
+    ) -> Union[Blog, BlogTitleTaken, BlogTitleCanNotBeEmpty, APIError]:
         try:
             db: Database = info.context.db
-            return db.create_new_blog(new_blog)
-        except BlogTitleTaken as error:
-            return error
+            if new_blog.title == "":
+                return BlogTitleCanNotBeEmpty()
+            existing_blog = await db.get_blog_by_title(new_blog.title)
+            if existing_blog is not None:
+                return BlogTitleTaken()
+            blog = BlogModel(**new_blog.__dict__)
+            saved_blog = await db.add_new_blog(blog)
+            return Blog(**saved_blog.dict()) if saved_blog is not None else APIError()
         except Exception as error:
             info.context.logger.error(__name__, error)
             return APIError()

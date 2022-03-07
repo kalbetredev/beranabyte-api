@@ -15,3 +15,10 @@ class BlogTitleTaken(BaseError):
     @strawberry.field
     def error(self) -> Error:
         return APIError(messages.BLOG_TITLE_TAKEN)
+
+
+@strawberry.type
+class BlogTitleCanNotBeEmpty(BaseError):
+    @strawberry.field
+    def error(self) -> Error:
+        return APIError(messages.BLOG_TITLE_EMPTY)
