@@ -34,7 +34,8 @@ class Database(ABC):
     async def get_blog_by_id(self, blog_id: str) -> Union[BlogModel, None]:
         pass
 
-    async def get_blog(self, blog_id: str) -> Union[BlogModel, None]:
+    @abstractmethod
+    async def get_blog_by_title(self, title: str) -> Union[BlogModel, None]:
         pass
 
     @abstractmethod
