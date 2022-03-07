@@ -1,14 +1,17 @@
 from api.database.database import Database
 from typing import List, Union
 from api.database.databaseerror import DatabaseError
-from api.schemas.types.blog import Blog, NewBlog, UpdatedBlog
-from api.schemas.types.user import UserMeta
+from api.database.models.blog_model import BlogModel
+from api.database.models.page_model import PageModel
+from api.database.models.sort_model import SortModel
+from api.database.models.user_model import UserModel
+from api.schemas.types.blog import NewBlog, UpdatedBlog
 from api.utils.logging.defaultlogger import DefaultLogger
 from logging import Logger
 import motor.motor_asyncio
 from api.config.settings import settings
-from api.database.models import Page, Sort
 from pymongo import TEXT
+from bson.objectid import ObjectId
 
 USERS_META_COLLECTION = "users_meta"
 BLOGS_COLLECTION = "blogs"
@@ -28,12 +31,12 @@ class MongoDatabase(Database):
     async def get_blogs(
         self,
         query: dict,
-        sort: Sort | None,
-        page: Page,
-    ) -> List[Blog]:
+        sort: SortModel | None,
+        page: PageModel,
+    ) -> List[BlogModel]:
         try:
-            blogs: List[Blog] = []
-            sort = sort if sort is not None else Sort(key="_id", dir=1)
+            blogs: List[BlogModel] = []
+            sort = sort if sort is not None else SortModel(key="_id", dir=1)
             skip = (page.number - 1) * page.size
 
             cursor = (
@@ -43,9 +46,8 @@ class MongoDatabase(Database):
                 .limit(page.size)
             )
 
-            for document in await cursor.to_list(length=1000):
-                blog_id = str(document["_id"])
-                blogs.append(Blog(id=blog_id, title=document["title"]))
+            for document in await cursor.to_list(length=page.size):
+                blogs.append(BlogModel(**document))
             return blogs
         except Exception as error:
             self.logger.error(__name__, error)
@@ -57,11 +59,11 @@ class MongoDatabase(Database):
     async def search_blogs(
         self,
         text: str,
-        page: Page,
+        page: PageModel,
         max_limit: int,
-    ) -> List[Blog]:
+    ) -> List[BlogModel]:
         try:
-            blogs: List[Blog] = []
+            blogs: List[BlogModel] = []
             skip = (page.number - 1) * page.size
 
             cursor = (
@@ -74,8 +76,7 @@ class MongoDatabase(Database):
                 .sort("score", {"$meta": "textScore"})
             )
             for document in await cursor.to_list(length=page.size):
-                blog_id = str(document["_id"])
-                blogs.append(Blog(id=blog_id, title=document["title"]))
+                blogs.append(BlogModel(**document))
             return blogs
         except Exception as error:
             self.logger.error(__name__, error)
@@ -87,10 +88,10 @@ class MongoDatabase(Database):
     async def get_all_topics(self) -> List[str]:
         pass
 
-    async def create_new_blog(self, new_blog: NewBlog) -> Blog:
+    async def create_new_blog(self, new_blog: NewBlog) -> BlogModel:
         pass
 
-    async def update_blog(self, updated_blog: UpdatedBlog) -> Blog:
+    async def update_blog(self, updated_blog: UpdatedBlog) -> BlogModel:
         pass
 
     async def delete_blog(self, blog_id: str):
@@ -102,20 +103,21 @@ class MongoDatabase(Database):
     async def increment_blog_view_count(self, blog_id: str):
         pass
 
-    async def add_user_meta(self, user_meta: UserMeta) -> str:
+    async def add_user(self, user: UserModel) -> str:
         try:
-            result = await self.users_meta_collection.insert_one(user_meta.__dict__)
+            result = await self.users_meta_collection.insert_one(user.__dict__)
             return result.inserted_id
         except Exception as error:
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to Save User Meta data to Database")
 
-    async def get_user_meta(self, user_id: str) -> UserMeta:
+    async def get_user(self, user_id: str) -> UserModel | None:
         try:
             document = await self.users_meta_collection.find_one({"user_id": user_id})
             if document is not None:
-                del document["_id"]
-                return UserMeta(**document)
+                return UserModel(**document)
+            else:
+                return None
         except Exception as error:
             self.logger.error(__name__, error)
-            raise DatabaseError("Unable to get the specified user's meta data.")
+            raise DatabaseError("Unable to get the specified user's data.")

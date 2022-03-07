@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import List, Union
-from api.schemas.types.blog import Blog, NewBlog, UpdatedBlog
-from api.schemas.types.user import UserMeta
-from api.database.models import Page, Sort
+from api.schemas.types.blog import NewBlog, UpdatedBlog
+from api.database.models.blog_model import BlogModel
+from api.database.models.page_model import PageModel
+from api.database.models.sort_model import SortModel
+from api.database.models.user_model import UserModel
 
 
 class Database(ABC):
@@ -10,9 +12,9 @@ class Database(ABC):
     async def get_blogs(
         self,
         query: dict,
-        sort: Sort | None,
-        page: Page,
-    ) -> List[Blog]:
+        sort: SortModel | None,
+        page: PageModel,
+    ) -> List[BlogModel]:
         pass
 
     @abstractmethod
@@ -23,13 +25,13 @@ class Database(ABC):
     async def search_blogs(
         self,
         text: str,
-        page: Page,
+        page: PageModel,
         max_limit: int,
-    ) -> List[Blog]:
+    ) -> List[BlogModel]:
         pass
 
     @abstractmethod
-    async def get_blog(self, blog_id: str) -> Union[Blog, None]:
+    async def get_blog(self, blog_id: str) -> Union[BlogModel, None]:
         pass
 
     @abstractmethod
@@ -37,11 +39,11 @@ class Database(ABC):
         pass
 
     @abstractmethod
-    async def create_new_blog(self, new_blog: NewBlog) -> Blog:
+    async def create_new_blog(self, new_blog: NewBlog) -> BlogModel:
         pass
 
     @abstractmethod
-    async def update_blog(self, updated_blog: UpdatedBlog) -> Blog:
+    async def update_blog(self, updated_blog: UpdatedBlog) -> BlogModel:
         pass
 
     @abstractmethod
@@ -57,9 +59,9 @@ class Database(ABC):
         pass
 
     @abstractmethod
-    async def add_user_meta(self, user_meta: UserMeta) -> bool:
+    async def add_user(self, user: UserModel) -> bool:
         pass
 
     @abstractmethod
-    async def get_user_meta(self, user_id: str) -> UserMeta:
+    async def get_user(self, user_id: str) -> UserModel:
         pass
