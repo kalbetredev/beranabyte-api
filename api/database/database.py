@@ -47,7 +47,7 @@ class Database(ABC):
         pass
 
     @abstractmethod
-    async def update_blog(self, updated_blog: UpdatedBlog) -> BlogModel:
+    async def update_blog(self, updated_blog: BlogModel) -> Union[BlogModel, None]:
         pass
 
     @abstractmethod

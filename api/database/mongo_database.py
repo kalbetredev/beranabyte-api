@@ -127,8 +127,19 @@ class MongoDatabase(Database):
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to add blog to Database")
 
-    async def update_blog(self, updated_blog: UpdatedBlog) -> BlogModel:
-        pass
+    async def update_blog(self, updated_blog: BlogModel) -> Union[BlogModel, None]:
+        try:
+            result = await self.blogs_collection.replace_one(
+                {"_id": ObjectId(updated_blog.id)}, updated_blog.dict()
+            )
+            return (
+                await self.get_blog_by_id(updated_blog.id)
+                if result.modified_count > 0
+                else None
+            )
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to update the blog.")
 
     async def delete_blog(self, blog_id: str):
         pass
