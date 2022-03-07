@@ -55,10 +55,6 @@ class Database(ABC):
         pass
 
     @abstractmethod
-    async def publish_blog(self, blog_id: str):
-        pass
-
-    @abstractmethod
     async def increment_blog_view_count(self, blog_id: str):
         pass
 

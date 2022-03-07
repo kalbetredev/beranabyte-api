@@ -101,19 +101,6 @@ class BlogMutation:
             return APIError()
 
     @strawberry.mutation
-    def publish_blog(
-        self, blog_id: str, info: Info
-    ) -> Union[Blog, BlogNotFound, APIError]:
-        try:
-            db: Database = info.context.db
-            return db.publish_blog(blog_id)
-        except BlogNotFound as error:
-            return error
-        except Exception as error:
-            info.context.logger.error(__name__, error)
-            return APIError()
-
-    @strawberry.mutation
     def increment_blog_view_count(
         self, blog_id: str, info: Info
     ) -> Union[Blog, BlogNotFound, APIError]:

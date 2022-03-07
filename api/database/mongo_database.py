@@ -144,9 +144,6 @@ class MongoDatabase(Database):
     async def delete_blog(self, blog_id: str):
         pass
 
-    async def publish_blog(self, blog_id: str):
-        pass
-
     async def increment_blog_view_count(self, blog_id: str):
         pass
 
