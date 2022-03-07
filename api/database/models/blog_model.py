@@ -5,7 +5,7 @@ from api.auth.models.mongomodel import MongoModel
 
 class BlogBase(BaseModel):
     title: str
-    topic: str = Field(default="", kw_only=True)
+    topic: str
     summary: str = Field(default="", kw_only=True)
     image_url: str = Field(default="", kw_only=True)
     content: str = Field(default="", kw_only=True)
