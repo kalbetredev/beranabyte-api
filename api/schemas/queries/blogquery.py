@@ -2,7 +2,9 @@ from math import ceil
 import strawberry
 from typing import List, Optional, Union
 from api.database.database import Database
-from api.database.models import Page, Sort
+from api.database.models.page_model import PageModel
+from api.database.models.sort_model import SortModel
+from api.database.models.user_model import UserModel, UserRole
 from api.schemas.types.blog import Blog
 from api.utils.errors.apierror import APIError
 from api.utils.errors.blogerrors import BlogNotFound
@@ -21,7 +23,7 @@ def get_page_with_count(max_count, page_size, page_num):
     page_count = ceil(max_count / page_size)
     page_num = 1 if page_num < 1 else page_num
     page_num = page_count if page_num > page_count else page_num
-    page = Page(number=page_num, size=page_size)
+    page = PageModel(number=page_num, size=page_size)
     return (page, page_count)
 
 
@@ -31,7 +33,6 @@ class BlogQuery:
     async def get_blogs(
         self,
         info: Info,
-        author_id: Optional[str] = None,
         is_published: Optional[bool] = None,
         sort_by: Optional[str] = None,
         sort_dir: Optional[int] = 1,
@@ -41,17 +42,11 @@ class BlogQuery:
         try:
             db: Database = info.context.db
 
-            query = {}
-            if author_id:
-                query["author_id"] = author_id
-
             query = {"is_published": True}
 
-            if author_id is not None and not is_published:
-                if (
-                    info.context.current_user is not None
-                    and info.context.current_user.uid == author_id
-                ):
+            if not is_published and info.context.current_user is not None:
+                user: UserModel = await db.get_user(info.context.current_user.uid)
+                if user.role == UserRole.ADMIN:
                     if is_published is None:
                         del query["is_published"]
                     else:
@@ -61,7 +56,7 @@ class BlogQuery:
 
             sort = None
             if sort_by is not None:
-                sort = Sort(sort_by, sort_dir)
+                sort = SortModel(sort_by, sort_dir)
 
             (page, page_count) = get_page_with_count(
                 await db.get_blogs_count(),
@@ -69,7 +64,8 @@ class BlogQuery:
                 page_num,
             )
 
-            blogs = await db.get_blogs(query=query, sort=sort, page=page)
+            blog_models = await db.get_blogs(query=query, sort=sort, page=page)
+            blogs = [Blog(**blog_model.dict()) for blog_model in blog_models]
             return GetBlogsResult(blogs, page_num=page_num, page_count=page_count)
         except Exception as error:
             info.context.logger.error(__name__, error)
@@ -111,11 +107,10 @@ class BlogQuery:
     ) -> Union[Blog, BlogNotFound, APIError]:
         try:
             db: Database = info.context.db
-            blog = await db.get_blog(blog_id)
-            if blog == None:
-                return BlogNotFound()
-            else:
-                return blog
+            blog_model = await db.get_blog(blog_id)
+            return (
+                Blog(**blog_model.dict()) if blog_model is not None else BlogNotFound()
+            )
         except Exception as error:
             info.context.logger.error(__name__, error)
             return APIError()
