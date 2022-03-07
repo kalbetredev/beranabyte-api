@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import List, Set, Union
 from api.schemas.types.blog import NewBlog, UpdatedBlog
 from api.database.models.blog_model import BlogModel
 from api.database.models.page_model import PageModel
@@ -35,7 +35,7 @@ class Database(ABC):
         pass
 
     @abstractmethod
-    async def get_all_topics(self) -> List[str]:
+    async def get_all_topics(self) -> Set[str]:
         pass
 
     @abstractmethod

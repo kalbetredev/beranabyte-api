@@ -1,5 +1,5 @@
 from api.database.database import Database
-from typing import List, Union
+from typing import List, Set, Union
 from api.database.databaseerror import DatabaseError
 from api.database.models.blog_model import BlogModel
 from api.database.models.page_model import PageModel
@@ -92,8 +92,18 @@ class MongoDatabase(Database):
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to get the specified blog")
 
-    async def get_all_topics(self) -> List[str]:
-        pass
+    async def get_all_topics(self) -> Set[str]:
+        try:
+            count = await self.get_blogs_count()
+            cursor = self.blogs_collection.find({})
+
+            return {
+                BlogModel(**document).topic
+                for document in await cursor.to_list(length=count)
+            }
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to get the blog topics")
 
     async def create_new_blog(self, new_blog: NewBlog) -> BlogModel:
         pass
