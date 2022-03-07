@@ -1,5 +1,5 @@
 import strawberry
-from typing import Optional
+from typing import List, Optional
 
 from api.database.models.blog_model import BlogBase
 
@@ -23,3 +23,10 @@ class NewBlog:
 class UpdatedBlog(NewBlog):
     title: Optional[str] = None
     is_published: Optional[bool] = None
+
+
+@strawberry.type
+class BlogsResult:
+    blogs: List[Blog]
+    page_num: int
+    page_count: int
