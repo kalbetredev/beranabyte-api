@@ -76,11 +76,12 @@ async def search_blogs(
             page_num,
         )
 
-        blogs = await db.search_blogs(
+        blog_models = await db.search_blogs(
             text=text,
             page=page,
             max_limit=search_limit,
         )
+        blogs = [Blog(**blog_model.dict()) for blog_model in blog_models]
         return BlogsResult(blogs, page_num=page.number, page_count=page_count)
     except Exception as error:
         info.context.logger.error(__name__, error)
@@ -93,7 +94,7 @@ async def get_blog(
 ) -> Union[Blog, BlogNotFound, APIError]:
     try:
         db: Database = info.context.db
-        blog_model = await db.get_blog(blog_id)
+        blog_model = await db.get_blog_by_id(blog_id)
         return Blog(**blog_model.dict()) if blog_model is not None else BlogNotFound()
     except Exception as error:
         info.context.logger.error(__name__, error)
