@@ -82,8 +82,15 @@ class MongoDatabase(Database):
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to search for your blogs")
 
-    async def get_blog(self, blog_id: str) -> Union[Blog, None]:
-        pass
+    async def get_blog(self, blog_id: str) -> Union[BlogModel, None]:
+        try:
+            document = await self.blogs_collection.find_one({"_id": ObjectId(blog_id)})
+            if document is not None:
+                return BlogModel(id=blog_id, **document)
+            return None
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to get the specified blog")
 
     async def get_all_topics(self) -> List[str]:
         pass
