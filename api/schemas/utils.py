@@ -10,3 +10,10 @@ async def is_current_user_admin(info: Info) -> bool:
     else:
         user: UserModel = await db.get_user(info.context.current_user.uid)
         return user.role == UserRole.ADMIN
+
+
+def update_attributes(updated, existing) -> None:
+
+    for attr, value in updated.__dict__.items():
+        if value:
+            setattr(existing, attr, value)
