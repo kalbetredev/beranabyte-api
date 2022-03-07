@@ -13,7 +13,9 @@ from api.utils.errors.blogerrors import BlogNotFound
 from api.schemas.types.responses import Success
 from api.utils.constants import messages
 from api.utils.errors.validationerror import InputError, InputValidationError
+from api.utils.helpers import update_attributes
 from bson.objectid import ObjectId
+
 
 DeleteBlogResult = strawberry.union(
     "DeleteBlogResult", [Success, BlogNotFound, APIError]
@@ -77,10 +79,7 @@ class BlogMutation:
                         [InputError(input="title", message=messages.BLOG_TITLE_TAKEN)]
                     )
 
-                existing_blog = update_blog_properties(
-                    updated_blog=updated_blog,
-                    existing_blog=existing_blog,
-                )
+                update_attributes(updated=updated_blog, existing=existing_blog)
                 saved_blog = await db.update_blog(existing_blog)
                 return (
                     Blog(**saved_blog.dict()) if saved_blog is not None else APIError()
@@ -126,29 +125,3 @@ class BlogMutation:
         except Exception as error:
             info.context.logger.error(__name__, error)
             return APIError()
-
-
-def update_blog_properties(
-    updated_blog: UpdatedBlog, existing_blog: BlogModel
-) -> BlogModel:
-    existing_blog.title = (
-        updated_blog.title if updated_blog.title else existing_blog.title
-    )
-    existing_blog.topic = (
-        updated_blog.topic if updated_blog.topic else existing_blog.topic
-    )
-    existing_blog.summary = (
-        updated_blog.summary if updated_blog.summary else existing_blog.summary
-    )
-    existing_blog.image_url = (
-        updated_blog.image_url if updated_blog.image_url else existing_blog.image_url
-    )
-    existing_blog.content = (
-        updated_blog.content if updated_blog.content else existing_blog.content
-    )
-    existing_blog.is_published = (
-        updated_blog.is_published
-        if updated_blog.is_published
-        else existing_blog.is_published
-    )
-    return existing_blog
