@@ -1,4 +1,4 @@
-from typing import Union
+from typing import List, Union
 import strawberry
 from strawberry.types import Info
 from api.database.database import Database
@@ -9,7 +9,28 @@ from api.utils.errors.blogerrors import BlogNotFound
 from api.schemas.types.responses import Success
 from api.utils.constants import messages
 from api.utils.errors.validationerror import InputError, InputValidationError
+from bson.objectid import ObjectId
 
+DeleteBlogResult = strawberry.union(
+    "DeleteBlogResult", [Success, BlogNotFound, APIError]
+)
+
+
+def validate_new_blog_inputs(
+    new_blog: NewBlog,
+) -> List[InputError]:
+    validation_errors: List[InputError] = []
+    if new_blog.title is None or new_blog.title == "":
+        validation_errors.append(
+            InputError(input="title", message=messages.BLOG_TITLE_EMPTY)
+        )
+
+    if new_blog.topic is None or new_blog.topic == "":
+        validation_errors.append(
+            InputError(input="topic", message=messages.BLOG_TOPIC_EMPTY)
+        )
+
+    return validation_errors
 
 ModifyBlogResult = strawberry.union(
     "ModifyBlogResult",
@@ -30,18 +51,15 @@ class BlogMutation:
         try:
             db: Database = info.context.db
 
-            if new_blog.title == "":
-                title_empty = InputError(
-                    input="title", message=messages.BLOG_TITLE_EMPTY
-                )
-                return InputValidationError([title_empty])
+            validation_errors: List[InputError] = validate_new_blog_inputs(new_blog)
 
-            existing_blog = await db.get_blog_by_title(new_blog.title)
-            if existing_blog is not None:
-                title_taken = InputError(
-                    input="title", message=messages.BLOG_TITLE_TAKEN
+            if len(validation_errors) > 0:
+                return InputValidationError(validation_errors)
+
+            if await db.get_blog_by_title(new_blog.title) is not None:
+                return InputValidationError(
+                    [InputError(input="title", message=messages.BLOG_TITLE_TAKEN)]
                 )
-                return InputValidationError([title_taken])
 
             blog = BlogModel(**new_blog.__dict__)
             saved_blog = await db.add_new_blog(blog)
