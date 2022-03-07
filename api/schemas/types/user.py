@@ -1,27 +1,8 @@
 import strawberry
-from enum import Enum
-from typing import Optional
+
+from api.database.models.user_model import UserBase
 
 
-class UserRole(Enum):
-    ADMIN = "admin"
-    AUTHOR = "author"
-    USER = "user"
-
-
-@strawberry.interface
-class UserBase:
-    user_id: strawberry.ID
+@strawberry.experimental.pydantic.type(model=UserBase, all_fields=True)
+class User:
     email: str
-
-
-@strawberry.type
-class UserMeta:
-    user_id: strawberry.ID
-    role: str
-    photo_url: Optional[str] = None
-
-
-@strawberry.type
-class User(UserMeta, UserBase):
-    pass
