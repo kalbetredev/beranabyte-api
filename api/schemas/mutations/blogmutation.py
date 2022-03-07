@@ -10,16 +10,11 @@ from api.schemas.validators.blog_validators import (
 )
 from api.utils.errors.apierror import APIError
 from api.utils.errors.blogerrors import BlogNotFound
-from api.schemas.types.responses import Success
+from api.schemas.types.responses import ActionResult
 from api.utils.constants import messages
 from api.utils.errors.validationerror import InputError, InputValidationError
 from api.utils.helpers import update_attributes
 from bson.objectid import ObjectId
-
-
-DeleteBlogResult = strawberry.union(
-    "DeleteBlogResult", [Success, BlogNotFound, APIError]
-)
 
 
 @strawberry.type
@@ -89,13 +84,33 @@ class BlogMutation:
             return APIError()
 
     @strawberry.mutation
-    def delete_blog(self, blog_id: str, info: Info) -> DeleteBlogResult:
+    async def delete_blog(self, id: str, info: Info) -> Union[ActionResult, APIError]:
         try:
             db: Database = info.context.db
-            db.delete_blog(blog_id)
-            return Success(messages.BLOG_DELETED_SUCCESSFULLY)
-        except BlogNotFound as error:
-            return error
+
+            if not ObjectId.is_valid(id):
+                return ActionResult(
+                    is_successfull=False,
+                    message=messages.INVALID_ID,
+                )
+            else:
+                existing_blog = await db.get_blog_by_id(id)
+                if existing_blog is None:
+                    return ActionResult(
+                        is_successfull=False,
+                        message=messages.BLOG_NOT_FOUND,
+                    )
+
+                result = await db.delete_blog(id)
+                return ActionResult(
+                    is_successfull=result,
+                    message=(
+                        "Blog deleted successfully"
+                        if result
+                        else "Unable to delete the blog"
+                    ),
+                )
+
         except Exception as error:
             info.context.logger.error(__name__, error)
             return APIError()

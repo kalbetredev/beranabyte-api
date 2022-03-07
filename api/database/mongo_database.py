@@ -140,8 +140,13 @@ class MongoDatabase(Database):
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to update the blog.")
 
-    async def delete_blog(self, blog_id: str):
-        pass
+    async def delete_blog(self, blog_id: str) -> bool:
+        try:
+            result = await self.blogs_collection.delete_one({"_id": ObjectId(blog_id)})
+            return result.deleted_count > 0
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to delete the blog.")
 
     async def add_user(self, user: UserModel) -> str:
         try:
