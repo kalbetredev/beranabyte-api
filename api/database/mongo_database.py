@@ -12,7 +12,7 @@ from api.config.settings import settings
 from pymongo import TEXT
 from bson.objectid import ObjectId
 
-USERS_META_COLLECTION = "users_meta"
+USERS_COLLECTION = "users"
 BLOGS_COLLECTION = "blogs"
 
 
@@ -23,7 +23,7 @@ class MongoDatabase(Database):
             settings.mongodb_url,
         )
         self.main_db = self.client[settings.main_db_name]
-        self.users_meta_collection = self.main_db[USERS_META_COLLECTION]
+        self.users_collection = self.main_db[USERS_COLLECTION]
         self.blogs_collection = self.main_db[BLOGS_COLLECTION]
         self.blogs_collection.create_index([("$**", TEXT)])
 
@@ -150,7 +150,7 @@ class MongoDatabase(Database):
 
     async def add_user(self, user: UserModel) -> str:
         try:
-            result = await self.users_meta_collection.insert_one(user.__dict__)
+            result = await self.users_collection.insert_one(user.__dict__)
             return result.inserted_id
         except Exception as error:
             self.logger.error(__name__, error)
@@ -158,7 +158,7 @@ class MongoDatabase(Database):
 
     async def get_user(self, user_id: str) -> UserModel | None:
         try:
-            document = await self.users_meta_collection.find_one({"user_id": user_id})
+            document = await self.users_collection.find_one({"user_id": user_id})
             if document is not None:
                 return UserModel(**document)
             else:
