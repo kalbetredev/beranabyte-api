@@ -9,7 +9,7 @@ class Error:
     message: str
 
 
-class BaseError(ABC, Exception):
+class BaseError(ABC, BaseException):
     @abstractmethod
     def error(self) -> Error:
         pass
