@@ -55,10 +55,6 @@ class Database(ABC):
         pass
 
     @abstractmethod
-    async def increment_blog_view_count(self, blog_id: str):
-        pass
-
-    @abstractmethod
     async def add_user(self, user: UserModel) -> bool:
         pass
 
