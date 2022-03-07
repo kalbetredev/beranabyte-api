@@ -115,8 +115,17 @@ class MongoDatabase(Database):
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to get the blog topics")
 
-    async def create_new_blog(self, new_blog: NewBlog) -> BlogModel:
-        pass
+    async def add_new_blog(self, new_blog: BlogModel) -> Union[BlogModel, None]:
+        try:
+            result = await self.blogs_collection.insert_one(new_blog.dict())
+            return (
+                await self.get_blog_by_id(str(result.inserted_id))
+                if result.inserted_id is not None
+                else None
+            )
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to add blog to Database")
 
     async def update_blog(self, updated_blog: UpdatedBlog) -> BlogModel:
         pass

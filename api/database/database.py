@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Set, Union
-from api.schemas.types.blog import NewBlog, UpdatedBlog
+from api.schemas.types.blog import UpdatedBlog
 from api.database.models.blog_model import BlogModel
 from api.database.models.page_model import PageModel
 from api.database.models.sort_model import SortModel
@@ -43,7 +43,7 @@ class Database(ABC):
         pass
 
     @abstractmethod
-    async def create_new_blog(self, new_blog: NewBlog) -> BlogModel:
+    async def add_new_blog(self, new_blog: BlogModel) -> Union[BlogModel, None]:
         pass
 
     @abstractmethod
