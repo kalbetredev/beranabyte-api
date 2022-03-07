@@ -4,6 +4,7 @@ from strawberry.types import Info
 from api.database.database import Database
 from api.database.models.blog_model import BlogModel
 from api.schemas.types.blog import Blog, NewBlog, UpdatedBlog
+from api.schemas.utils import is_current_user_admin, update_attributes
 from api.schemas.validators.blog_validators import (
     validate_blog_update_inputs,
     validate_new_blog_inputs,
@@ -13,7 +14,6 @@ from api.utils.errors.blogerrors import BlogNotFound
 from api.schemas.types.responses import ActionResult
 from api.utils.constants import messages
 from api.utils.errors.validationerror import InputError, InputValidationError
-from api.utils.helpers import update_attributes
 from bson.objectid import ObjectId
 
 
@@ -25,6 +25,9 @@ class BlogMutation:
     ) -> Union[Blog, InputValidationError, APIError]:
         try:
             db: Database = info.context.db
+
+            if not await is_current_user_admin(info):
+                return APIError(messages.UNAUTHORIZED_ACCESS)
 
             validation_errors: List[InputError] = validate_new_blog_inputs(new_blog)
 
@@ -49,6 +52,9 @@ class BlogMutation:
     ) -> Union[Blog, BlogNotFound, InputValidationError, APIError]:
         try:
             db: Database = info.context.db
+
+            if not await is_current_user_admin(info):
+                return APIError(messages.UNAUTHORIZED_ACCESS)
 
             if not ObjectId.is_valid(id):
                 return InputValidationError(
@@ -87,6 +93,9 @@ class BlogMutation:
     async def delete_blog(self, id: str, info: Info) -> Union[ActionResult, APIError]:
         try:
             db: Database = info.context.db
+
+            if not await is_current_user_admin(info):
+                return APIError(messages.UNAUTHORIZED_ACCESS)
 
             if not ObjectId.is_valid(id):
                 return ActionResult(
