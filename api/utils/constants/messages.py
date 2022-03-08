@@ -26,3 +26,4 @@ TOKEN_GENERATION_FAILED = "Error occurred while generating authentication tokens
 INVALID_CREDENTIAL = "Invalid user credential."
 NOT_AUTHENTICATED = "User not authenticated."
 USER_NOT_FOUND = "No user record found."
+UPLOAD_SUCCESS = "File uploaded successfully."
