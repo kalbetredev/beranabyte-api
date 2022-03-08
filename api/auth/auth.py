@@ -34,6 +34,8 @@ class Auth:
                 user_auth.email,
                 user_auth.password,
             )
+            if response is None:
+                raise AuthError(SIGNUP_FAILED)
             user_data = UserModel(
                 user_id=response.user_id,
                 role=UserRole.USER.value,
@@ -57,6 +59,8 @@ class Auth:
                 user_auth.email,
                 user_auth.password,
             )
+            if response is None:
+                raise AuthError(SIGNUP_FAILED)
             return await self.generate_user_token(
                 response=response,
                 user_ip=user_auth.ip,
