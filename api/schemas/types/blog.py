@@ -1,47 +1,36 @@
-from __future__ import annotations
-from typing import Optional
 import strawberry
-from datetime import datetime
-from api.schemas.types.user import User
-from api import app
-from api.utils.helpers import update_attributes
+from typing import List, Optional
+
+from api.database.models.blog_model import BlogBase
 
 
-@strawberry.interface
-class BlogBase:
-    id: strawberry.ID
-    title: str
+@strawberry.experimental.pydantic.type(model=BlogBase, all_fields=True)
+class Blog:
+    id: str
 
 
 @strawberry.input
 class NewBlog:
     title: str
-    topic: Optional[str] = None
-    summary: Optional[str] = None
-    image_url: Optional[str] = None
-    content: Optional[str] = None
+    topic: str
+    summary: Optional[str] = ""
+    image_url: Optional[str] = ""
+    content: Optional[str] = ""
     is_featured: Optional[bool] = False
 
 
 @strawberry.input
-class UpdatedBlog(NewBlog, BlogBase):
+class UpdatedBlog:
     title: Optional[str] = None
+    topic: Optional[str] = None
+    summary: Optional[str] = None
+    image_url: Optional[str] = None
+    content: Optional[str] = None
     is_published: Optional[bool] = None
 
 
 @strawberry.type
-class Blog(NewBlog, BlogBase):
-    is_published: Optional[bool] = False
-    modified_on: Optional[datetime] = datetime.now()
-    view_count: Optional[int] = 0
-    published_on: Optional[datetime] = None
-
-    @strawberry.field
-    def author(self, root: Blog) -> User:
-        return app.database.get_blog_author(root.id)
-
-    @classmethod
-    def fromNewBlog(cls, id: str, new_blog: NewBlog):
-        blog = Blog(id=id, title=new_blog.title)
-        update_attributes(blog, **new_blog.__dict__)
-        return blog
+class BlogsResult:
+    blogs: List[Blog]
+    page_num: int
+    page_count: int

@@ -2,5 +2,6 @@ import strawberry
 
 
 @strawberry.type
-class Success:
+class ActionResult:
+    is_successfull: bool
     message: str

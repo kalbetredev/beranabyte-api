@@ -10,7 +10,7 @@ class InputError:
 
 
 @strawberry.type
-class InputValidationError(Exception):
+class InputValidationError(BaseException):
     def __init__(self, errors: List[InputError]) -> None:
         self.errors = errors
 

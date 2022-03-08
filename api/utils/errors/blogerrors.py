@@ -8,10 +8,3 @@ class BlogNotFound(BaseError):
     @strawberry.field
     def error(self) -> Error:
         return APIError(messages.BLOG_NOT_FOUND)
-
-
-@strawberry.type
-class BlogTitleTaken(BaseError):
-    @strawberry.field
-    def error(self) -> Error:
-        return APIError(messages.BLOG_TITLE_TAKEN)
