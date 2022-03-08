@@ -1,19 +1,23 @@
+from fastapi import UploadFile
 from api.database.database import Database
-from typing import List, Set, Union
+from typing import AsyncGenerator, List, Set, Tuple, Union
 from api.database.databaseerror import DatabaseError
 from api.database.models.blog_model import BlogModel
+from api.database.models.image_meta_data import ImageMetaData
 from api.database.models.page_model import PageModel
 from api.database.models.sort_model import SortModel
-from api.database.models.user_model import UserModel
+from api.database.models.user_model import UserModel, UserRole
 from api.utils.logging.defaultlogger import DefaultLogger
 from logging import Logger
 import motor.motor_asyncio
 from api.config.settings import settings
 from pymongo import TEXT
 from bson.objectid import ObjectId
+from motor.motor_asyncio import AsyncIOMotorGridFSBucket
 
 USERS_COLLECTION = "users"
 BLOGS_COLLECTION = "blogs"
+FILES_COLLECTION = "fs.files"
 
 
 class MongoDatabase(Database):
@@ -25,6 +29,7 @@ class MongoDatabase(Database):
         self.main_db = self.client[settings.main_db_name]
         self.users_collection = self.main_db[USERS_COLLECTION]
         self.blogs_collection = self.main_db[BLOGS_COLLECTION]
+        self.files_collection = self.main_db[FILES_COLLECTION]
         self.blogs_collection.create_index([("$**", TEXT)])
 
     async def get_blogs(
@@ -166,3 +171,57 @@ class MongoDatabase(Database):
         except Exception as error:
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to get the specified user's data.")
+
+    async def save_image(
+        self,
+        blog_id: str,
+        image: UploadFile,
+    ) -> str:
+        g_fs = AsyncIOMotorGridFSBucket(self.main_db)
+        meta_data = ImageMetaData(
+            content_type=image.content_type,
+            reference_id=blog_id,
+        )
+        image_id = await g_fs.upload_from_stream(
+            image.filename,
+            image.file,
+            metadata=meta_data.dict(),
+        )
+        return image_id
+
+    async def read_image(
+        self, image_id: str, user_id: str
+    ) -> Tuple[AsyncGenerator | None, str | None]:
+        try:
+            g_fs = AsyncIOMotorGridFSBucket(self.main_db)
+
+            image = await self.files_collection.find_one({"_id": ObjectId(image_id)})
+            meta_data = ImageMetaData(**image["metadata"])
+
+            blog = await self.get_blog_by_id(meta_data.reference_id)
+            if not blog.is_published:
+                user_data = await self.get_user(user_id) if user_id else None
+                if not user_data or user_data.role != UserRole.ADMIN:
+                    return (None, None)
+
+            g_out = await g_fs.open_download_stream(ObjectId(image_id))
+            return (self.read_image_in_chunks(g_out), meta_data.content_type)
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to delete the specified image")
+
+    async def delete_image(self, image_id: str) -> bool:
+        try:
+            g_fs = AsyncIOMotorGridFSBucket(self.main_db)
+            await g_fs.delete(ObjectId(image_id))
+            return True
+        except Exception as error:
+            self.logger.error(__name__, error)
+            return False
+
+    async def read_image_in_chunks(self, grid_out):
+        while True:
+            chunk = await grid_out.readchunk()
+            if not chunk:
+                break
+            yield chunk
