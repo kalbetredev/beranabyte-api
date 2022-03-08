@@ -7,12 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic.error_wrappers import ValidationError
 from strawberry.fastapi import GraphQLRouter
-from api.app_context import get_app_context
+from api.app_context import AppContext, app_context_dependency, get_app_context
 from api.auth.auth import Auth
 from api.auth.errors.autherrors import AuthError
 from api.auth.models.userauth import UserAuth
 from api.auth.utils.errorparsers import parse_validation_error
 from api.config.settings import settings
+from api.database.database import Database
+from api.database.mongo_database import MongoDatabase
 from api.schemas.mutations.apimutation import Mutation
 from api.schemas.queries.apiquery import Query
 from api.utils.constants.messages import (
@@ -23,6 +25,7 @@ from api.utils.constants.messages import (
 )
 from api.utils.logging.defaultlogger import DefaultLogger
 from api.utils.logging.logger import Logger
+from fastapi.responses import StreamingResponse
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)
 
@@ -135,6 +138,31 @@ async def refresh_token(
         raise HTTPException(
             status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=TOKEN_REFRESH_FAILED
         )
+
+
+@app.get("/images/{image_name}")
+async def get_image(image_name: str, request: Request):
+    try:
+        db: Database = MongoDatabase()
+        app_context: AppContext = await app_context_dependency(request)
+        user_uid = app_context.current_user.uid if app_context.current_user else None
+        (file, content_type) = await db.read_image(
+            image_id=image_name, user_id=user_uid
+        )
+        if file is None:
+            raise AuthError(
+                "No image found with the specified name or you are not authorized to access the image"
+            )
+        return StreamingResponse(file, media_type=content_type)
+    except AuthError as error:
+        logger.error(__name__, error.message)
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND,
+            detail=error.message,
+        )
+    except Exception as error:
+        logger.error(__name__, error)
+        raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
 def start_app():
