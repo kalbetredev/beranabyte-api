@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Set, Union
+from fastapi import UploadFile
 from api.database.models.blog_model import BlogModel
 from api.database.models.page_model import PageModel
 from api.database.models.sort_model import SortModel
@@ -59,4 +60,16 @@ class Database(ABC):
 
     @abstractmethod
     async def get_user(self, user_id: str) -> UserModel:
+        pass
+
+    @abstractmethod
+    async def save_image(self, blog_id: str, image: UploadFile) -> str:
+        pass
+
+    @abstractmethod
+    async def read_image(self, image_id: str):
+        pass
+
+    @abstractmethod
+    async def delete_image(self, image_id: str):
         pass
