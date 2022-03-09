@@ -6,6 +6,7 @@ from api.database.models.blogmodel import BlogModel
 from api.database.models.imagemetadata import ImageMetaData
 from api.database.models.pagemodel import PageModel
 from api.database.models.sortmodel import SortModel
+from api.database.models.subscribermodel import SubscriberModel
 from api.database.models.usermodel import UserModel, UserRole
 from api.utils.logging.defaultlogger import DefaultLogger
 from logging import Logger
@@ -18,6 +19,7 @@ from motor.motor_asyncio import AsyncIOMotorGridFSBucket
 USERS_COLLECTION = "users"
 BLOGS_COLLECTION = "blogs"
 FILES_COLLECTION = "fs.files"
+SUBSCRIBERS_COLLECTION = "subscribers"
 
 
 class MongoDatabase(Database):
@@ -30,6 +32,7 @@ class MongoDatabase(Database):
         self.users_collection = self.main_db[USERS_COLLECTION]
         self.blogs_collection = self.main_db[BLOGS_COLLECTION]
         self.files_collection = self.main_db[FILES_COLLECTION]
+        self.subscribers_collection = self.main_db[SUBSCRIBERS_COLLECTION]
         self.blogs_collection.create_index([("$**", TEXT)])
 
     async def get_blogs(
@@ -225,3 +228,26 @@ class MongoDatabase(Database):
             if not chunk:
                 break
             yield chunk
+
+    async def add_subscriber(self, email: str) -> bool:
+        try:
+            subscriber = SubscriberModel(email=email)
+            existing_subscriber = await self.get_subscriber_by_email(email)
+            if existing_subscriber is None:
+                result = await self.subscribers_collection.insert_one(subscriber.dict())
+                return result.inserted_id is not None
+            else:
+                return False
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to add blog to Database")
+
+    async def get_subscriber_by_email(self, email: str) -> SubscriberModel | None:
+        try:
+            document = await self.subscribers_collection.find_one({"email": email})
+            if document is not None:
+                return SubscriberModel(**document)
+            return None
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to get the subscriber")

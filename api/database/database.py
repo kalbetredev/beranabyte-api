@@ -73,3 +73,7 @@ class Database(ABC):
     @abstractmethod
     async def delete_image(self, image_id: str):
         pass
+
+    @abstractmethod
+    async def add_subscriber(self, email: str) -> bool:
+        pass
