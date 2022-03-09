@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import List, Set, Union
 from fastapi import UploadFile
-from api.database.models.blog_model import BlogModel
-from api.database.models.page_model import PageModel
-from api.database.models.sort_model import SortModel
-from api.database.models.user_model import UserModel
+from api.database.models.blogmodel import BlogModel
+from api.database.models.pagemodel import PageModel
+from api.database.models.sortmodel import SortModel
+from api.database.models.usermodel import UserModel
 
 
 class Database(ABC):

@@ -2,11 +2,11 @@ from fastapi import UploadFile
 from api.database.database import Database
 from typing import AsyncGenerator, List, Set, Tuple, Union
 from api.database.databaseerror import DatabaseError
-from api.database.models.blog_model import BlogModel
-from api.database.models.image_meta_data import ImageMetaData
-from api.database.models.page_model import PageModel
-from api.database.models.sort_model import SortModel
-from api.database.models.user_model import UserModel, UserRole
+from api.database.models.blogmodel import BlogModel
+from api.database.models.imagemetadata import ImageMetaData
+from api.database.models.pagemodel import PageModel
+from api.database.models.sortmodel import SortModel
+from api.database.models.usermodel import UserModel, UserRole
 from api.utils.logging.defaultlogger import DefaultLogger
 from logging import Logger
 import motor.motor_asyncio

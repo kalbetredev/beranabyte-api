@@ -2,7 +2,7 @@ import imghdr
 import os
 from strawberry.types import Info
 from api.database.database import Database
-from api.database.models.user_model import UserModel, UserRole
+from api.database.models.usermodel import UserModel, UserRole
 
 
 async def is_current_user_admin(info: Info) -> bool:

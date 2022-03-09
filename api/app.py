@@ -7,14 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic.error_wrappers import ValidationError
 from strawberry.fastapi import GraphQLRouter
-from api.app_context import AppContext, app_context_dependency, get_app_context
+from api.appcontext import AppContext, app_context_dependency, get_app_context
 from api.auth.auth import Auth
 from api.auth.errors.autherrors import AuthError
 from api.auth.models.userauth import UserAuth
 from api.auth.utils.errorparsers import parse_validation_error
 from api.config.settings import settings
 from api.database.database import Database
-from api.database.mongo_database import MongoDatabase
+from api.database.mongodatabase import MongoDatabase
 from api.schemas.mutations.apimutation import Mutation
 from api.schemas.queries.apiquery import Query
 from api.utils.constants.messages import (

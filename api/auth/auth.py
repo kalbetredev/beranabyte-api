@@ -8,8 +8,8 @@ from api.auth.models.token import TokenResponse
 from api.auth.models.userauth import UserAuth
 from api.auth.models.userauthresponse import UserAuthResponse
 from api.auth.models.usertoken import UserToken
-from api.database.models.user_model import UserModel, UserRole
-from api.database.mongo_database import MongoDatabase
+from api.database.models.usermodel import UserModel, UserRole
+from api.database.mongodatabase import MongoDatabase
 from api.utils.constants.messages import (
     SIGNIN_FAILED,
     SIGNUP_FAILED,

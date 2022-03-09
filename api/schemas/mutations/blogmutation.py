@@ -2,10 +2,10 @@ from typing import List, Union
 import strawberry
 from strawberry.types import Info
 from api.database.database import Database
-from api.database.models.blog_model import BlogModel
+from api.database.models.blogmodel import BlogModel
 from api.schemas.types.blog import Blog, NewBlog, UpdatedBlog
 from api.schemas.utils import is_current_user_admin, update_attributes
-from api.schemas.validators.blog_validators import (
+from api.schemas.validators.blogvalidators import (
     validate_blog_update_inputs,
     validate_new_blog_inputs,
 )

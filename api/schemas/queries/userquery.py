@@ -1,6 +1,6 @@
 from typing import Union
 import strawberry
-from api.schemas.resolvers.user_resolvers import get_current_user, get_user
+from api.schemas.resolvers.userresolvers import get_current_user, get_user
 from api.schemas.types.user import User
 from api.utils.errors.apierror import APIError
 from api.utils.errors.usererrors import UserNotAuthenticated, UserNotFound

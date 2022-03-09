@@ -3,7 +3,7 @@ from fastapi.security.oauth2 import OAuth2PasswordBearer
 from strawberry.fastapi import BaseContext
 from api.auth.firebaseadmin import get_current_user
 from api.database.database import Database
-from api.database.mongo_database import MongoDatabase
+from api.database.mongodatabase import MongoDatabase
 from api.utils.logging.defaultlogger import DefaultLogger
 from api.utils.logging.logger import Logger
 

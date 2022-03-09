@@ -1,9 +1,9 @@
 from math import ceil
 from typing import List, Optional, Union
 from api.database.database import Database
-from api.database.models.page_model import PageModel
-from api.database.models.sort_model import SortModel
-from api.database.models.user_model import UserModel, UserRole
+from api.database.models.pagemodel import PageModel
+from api.database.models.sortmodel import SortModel
+from api.database.models.usermodel import UserModel, UserRole
 from api.schemas.types.blog import Blog, BlogsResult
 from api.utils.errors.apierror import APIError
 from api.utils.errors.blogerrors import BlogNotFound

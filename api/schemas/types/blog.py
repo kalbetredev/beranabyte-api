@@ -1,7 +1,7 @@
 import strawberry
 from typing import List, Optional
 
-from api.database.models.blog_model import BlogBase
+from api.database.models.blogmodel import BlogBase
 
 
 @strawberry.experimental.pydantic.type(model=BlogBase, all_fields=True)

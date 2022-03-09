@@ -1,6 +1,6 @@
 import strawberry
 from typing import List, Union
-from api.schemas.resolvers.blog_resovers import (
+from api.schemas.resolvers.blogresovers import (
     get_blog,
     get_blogs,
     search_blogs,
