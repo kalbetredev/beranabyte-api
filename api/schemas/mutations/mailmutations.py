@@ -32,3 +32,34 @@ class MailMutation:
         except Exception as error:
             info.context.logger.error(__name__, error)
             return APIError()
+
+    @strawberry.mutation
+    async def send_message(
+        self,
+        info: Info,
+        email: str,
+        message: str,
+    ) -> Union[ActionResult, InputValidationError, APIError]:
+        try:
+            validate_email(email)
+            if message == "":
+                return InputValidationError(
+                    [InputError(input="message", message="Message can not be empty")]
+                )
+
+            db: Database = info.context.db
+            result = await db.save_message(email, message)
+            return ActionResult(
+                is_successfull=result,
+                message="Message sent successfully"
+                if result
+                else "Error occurred trying to send your message. Please try again",
+            )
+
+        except EmailError as error:
+            return InputValidationError(
+                [InputError(input="email", message="Invalid Email Address")]
+            )
+        except Exception as error:
+            info.context.logger.error(__name__, error)
+            return APIError()
