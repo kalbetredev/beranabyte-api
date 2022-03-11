@@ -4,6 +4,7 @@ from typing import AsyncGenerator, List, Set, Tuple, Union
 from api.database.databaseerror import DatabaseError
 from api.database.models.blogmodel import BlogModel
 from api.database.models.imagemetadata import ImageMetaData
+from api.database.models.messagemodel import MessageModel
 from api.database.models.pagemodel import PageModel
 from api.database.models.sortmodel import SortModel
 from api.database.models.subscribermodel import SubscriberModel
@@ -20,6 +21,7 @@ USERS_COLLECTION = "users"
 BLOGS_COLLECTION = "blogs"
 FILES_COLLECTION = "fs.files"
 SUBSCRIBERS_COLLECTION = "subscribers"
+MESSAGES_COLLECTION = "messages"
 
 
 class MongoDatabase(Database):
@@ -33,6 +35,7 @@ class MongoDatabase(Database):
         self.blogs_collection = self.main_db[BLOGS_COLLECTION]
         self.files_collection = self.main_db[FILES_COLLECTION]
         self.subscribers_collection = self.main_db[SUBSCRIBERS_COLLECTION]
+        self.messages_collection = self.main_db[MESSAGES_COLLECTION]
         self.blogs_collection.create_index([("$**", TEXT)])
 
     async def get_blogs(
@@ -251,3 +254,12 @@ class MongoDatabase(Database):
         except Exception as error:
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to get the subscriber")
+
+    async def save_message(self, email: str, message: str) -> bool:
+        try:
+            message = MessageModel(email=email, message=message)
+            result = await self.messages_collection.insert_one(message.dict())
+            return result.inserted_id is not None
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to save message to Database")

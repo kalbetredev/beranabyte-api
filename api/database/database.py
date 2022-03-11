@@ -77,3 +77,7 @@ class Database(ABC):
     @abstractmethod
     async def add_subscriber(self, email: str) -> bool:
         pass
+
+    @abstractmethod
+    async def save_message(self, email: str, message: str) -> bool:
+        pass
