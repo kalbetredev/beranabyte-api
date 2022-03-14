@@ -244,7 +244,7 @@ class MongoDatabase(Database):
                 return False
         except Exception as error:
             self.logger.error(__name__, error)
-            raise DatabaseError("Unable to add blog to Database")
+            raise DatabaseError("Unable to add subscriber to Database")
 
     async def unsubscribe_user(self, user_token: str) -> bool:
         try:
