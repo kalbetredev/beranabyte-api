@@ -79,5 +79,13 @@ class Database(ABC):
         pass
 
     @abstractmethod
+    async def unsubscribe_user(self, user_token: str) -> bool:
+        pass
+
+    @abstractmethod
+    async def get_unsubscribe_token(self, email: str) -> bool:
+        pass
+
+    @abstractmethod
     async def save_message(self, email: str, message: str) -> bool:
         pass

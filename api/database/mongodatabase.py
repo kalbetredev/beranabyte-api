@@ -16,6 +16,7 @@ from api.config.settings import settings
 from pymongo import TEXT
 from bson.objectid import ObjectId
 from motor.motor_asyncio import AsyncIOMotorGridFSBucket
+from jose import jwt
 
 USERS_COLLECTION = "users"
 BLOGS_COLLECTION = "blogs"
@@ -244,6 +245,37 @@ class MongoDatabase(Database):
         except Exception as error:
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to add blog to Database")
+
+    async def unsubscribe_user(self, user_token: str) -> bool:
+        try:
+            payload = jwt.decode(
+                user_token, settings.jwt_secrete, algorithms=settings.jwt_algorithm
+            )
+            user_id = payload.get("sub")
+            if user_id is None or not ObjectId.is_valid(user_id):
+                return False
+            else:
+                result = await self.subscribers_collection.delete_one(
+                    {"_id": ObjectId(user_id)}
+                )
+                return result.deleted_count > 0
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to remove subscriber from database")
+
+    async def get_unsubscribe_token(self, email: str) -> str | None:
+        try:
+            subscriber = await self.get_subscriber_by_email(email)
+            if subscriber is not None:
+                data = {"sub": str(subscriber.id)}
+                return jwt.encode(
+                    data, settings.jwt_secrete, algorithm=settings.jwt_algorithm
+                )
+            else:
+                return None
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to generate token to unsubscribe user")
 
     async def get_subscriber_by_email(self, email: str) -> SubscriberModel | None:
         try:
