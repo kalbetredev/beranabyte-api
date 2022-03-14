@@ -34,6 +34,23 @@ class MailMutation:
             return APIError()
 
     @strawberry.mutation
+    async def unsubscribe(
+        self, info: Info, unsubscribe_token: str
+    ) -> Union[ActionResult, APIError]:
+        try:
+            db: Database = info.context.db
+            result = await db.unsubscribe_user(unsubscribe_token)
+            return ActionResult(
+                is_successfull=result,
+                message="User unsubscribed successfully"
+                if result
+                else "Unable to unsubscribe user. Please try again",
+            )
+        except Exception as error:
+            info.context.logger.error(__name__, error)
+            return APIError()
+
+    @strawberry.mutation
     async def send_message(
         self,
         info: Info,
