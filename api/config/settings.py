@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     mongodb_url: str
     auth_db_name: str
     main_db_name: str
+    jwt_secrete: str
+    jwt_algorithm: str
 
     def get_google_application_credentials(self):
         decoded = base64.b64decode(self.google_application_credentials)
