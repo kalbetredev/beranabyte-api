@@ -4,8 +4,10 @@ from typing import AsyncGenerator, List, Set, Tuple, Union
 from api.database.databaseerror import DatabaseError
 from api.database.models.blogmodel import BlogModel
 from api.database.models.imagemetadata import ImageMetaData
+from api.database.models.messagemodel import MessageModel
 from api.database.models.pagemodel import PageModel
 from api.database.models.sortmodel import SortModel
+from api.database.models.subscribermodel import SubscriberModel
 from api.database.models.usermodel import UserModel, UserRole
 from api.utils.logging.defaultlogger import DefaultLogger
 from logging import Logger
@@ -14,10 +16,13 @@ from api.config.settings import settings
 from pymongo import TEXT
 from bson.objectid import ObjectId
 from motor.motor_asyncio import AsyncIOMotorGridFSBucket
+from jose import jwt
 
 USERS_COLLECTION = "users"
 BLOGS_COLLECTION = "blogs"
 FILES_COLLECTION = "fs.files"
+SUBSCRIBERS_COLLECTION = "subscribers"
+MESSAGES_COLLECTION = "messages"
 
 
 class MongoDatabase(Database):
@@ -30,6 +35,8 @@ class MongoDatabase(Database):
         self.users_collection = self.main_db[USERS_COLLECTION]
         self.blogs_collection = self.main_db[BLOGS_COLLECTION]
         self.files_collection = self.main_db[FILES_COLLECTION]
+        self.subscribers_collection = self.main_db[SUBSCRIBERS_COLLECTION]
+        self.messages_collection = self.main_db[MESSAGES_COLLECTION]
         self.blogs_collection.create_index([("$**", TEXT)])
 
     async def get_blogs(
@@ -225,3 +232,66 @@ class MongoDatabase(Database):
             if not chunk:
                 break
             yield chunk
+
+    async def add_subscriber(self, email: str) -> bool:
+        try:
+            subscriber = SubscriberModel(email=email)
+            existing_subscriber = await self.get_subscriber_by_email(email)
+            if existing_subscriber is None:
+                result = await self.subscribers_collection.insert_one(subscriber.dict())
+                return result.inserted_id is not None
+            else:
+                return False
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to add subscriber to Database")
+
+    async def unsubscribe_user(self, user_token: str) -> bool:
+        try:
+            payload = jwt.decode(
+                user_token, settings.jwt_secrete, algorithms=settings.jwt_algorithm
+            )
+            user_id = payload.get("sub")
+            if user_id is None or not ObjectId.is_valid(user_id):
+                return False
+            else:
+                result = await self.subscribers_collection.delete_one(
+                    {"_id": ObjectId(user_id)}
+                )
+                return result.deleted_count > 0
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to remove subscriber from database")
+
+    async def get_unsubscribe_token(self, email: str) -> str | None:
+        try:
+            subscriber = await self.get_subscriber_by_email(email)
+            if subscriber is not None:
+                data = {"sub": str(subscriber.id)}
+                return jwt.encode(
+                    data, settings.jwt_secrete, algorithm=settings.jwt_algorithm
+                )
+            else:
+                return None
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to generate token to unsubscribe user")
+
+    async def get_subscriber_by_email(self, email: str) -> SubscriberModel | None:
+        try:
+            document = await self.subscribers_collection.find_one({"email": email})
+            if document is not None:
+                return SubscriberModel(**document)
+            return None
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to get the subscriber")
+
+    async def save_message(self, email: str, message: str) -> bool:
+        try:
+            message = MessageModel(email=email, message=message)
+            result = await self.messages_collection.insert_one(message.dict())
+            return result.inserted_id is not None
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to save message to Database")
