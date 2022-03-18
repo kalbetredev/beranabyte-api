@@ -41,6 +41,7 @@ class MongoDatabase(Database):
         self.messages_collection = self.main_db[MESSAGES_COLLECTION]
         self.projects_collection = self.main_db[PROJECTS_COLLECTION]
         self.blogs_collection.create_index([("$**", TEXT)])
+        self.projects_collection.create_index([("$**", TEXT)])
 
     async def get_blogs(
         self,
@@ -298,6 +299,61 @@ class MongoDatabase(Database):
         except Exception as error:
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to save message to Database")
+
+    async def get_projects(
+        self,
+        page: PageModel,
+        query: dict | None = None,
+        sort: SortModel | None = None,
+    ) -> List[ProjectModel]:
+        try:
+            projects: List[ProjectModel] = []
+            query = query if query is not None else {}
+            sort = sort if sort is not None else SortModel(key="_id", dir=1)
+            skip = (page.number - 1) * page.size
+
+            cursor = (
+                self.projects_collection.find(query)
+                .sort(sort.key, sort.dir)
+                .skip(skip)
+                .limit(page.size)
+            )
+
+            for document in await cursor.to_list(length=page.size):
+                projects.append(ProjectModel(**document))
+            return projects
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to get the specified projects")
+
+    async def get_projects_count(self) -> int:
+        return await self.projects_collection.count_documents({})
+
+    async def search_projects(
+        self,
+        text: str,
+        page: PageModel,
+        max_limit: int,
+    ) -> List[ProjectModel]:
+        try:
+            projects: List[ProjectModel] = []
+            skip = (page.number - 1) * page.size
+
+            cursor = (
+                self.projects_collection.find(
+                    {"$text": {"$search": text}},
+                    {"score": {"$meta": "textScore"}},
+                )
+                .skip(skip)
+                .limit(max_limit)
+                .sort("score", {"$meta": "textScore"})
+            )
+            for document in await cursor.to_list(length=page.size):
+                projects.append(ProjectModel(**document))
+            return projects
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to search for your projects")
 
     async def get_project_by_id(self, project_id: str) -> ProjectModel | None:
         try:
