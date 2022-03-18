@@ -30,9 +30,9 @@ black = "^21.12b0"
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
+pytest = "^7.0"
 autopep8 = "^1.6.0"
-pytest-asyncio = "^0.16.0"
+pytest-asyncio = "^0.18.0"
 coverage = "^6.2"
 
 [build-system]
