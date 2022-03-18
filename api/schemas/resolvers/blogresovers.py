@@ -1,22 +1,12 @@
-from math import ceil
 from typing import List, Optional, Union
 from api.database.database import Database
-from api.database.models.pagemodel import PageModel
 from api.database.models.sortmodel import SortModel
 from api.database.models.usermodel import UserModel, UserRole
 from api.schemas.types.blog import Blog, BlogsResult
+from api.schemas import utils
 from api.utils.errors.apierror import APIError
 from api.utils.errors.blogerrors import BlogNotFound
 from strawberry.types import Info
-
-
-def get_page_with_count(max_count, page_size, page_num):
-    page_size = page_size if page_size >= 1 else 10
-    page_count = ceil(max_count / page_size)
-    page_num = 1 if page_num < 1 else page_num
-    page_num = page_count if page_num > page_count else page_num
-    page = PageModel(number=page_num, size=page_size)
-    return (page, page_count)
 
 
 async def get_blogs(
@@ -46,7 +36,7 @@ async def get_blogs(
         if sort_by is not None:
             sort = SortModel(sort_by, sort_dir)
 
-        (page, page_count) = get_page_with_count(
+        (page, page_count) = utils.get_page_with_count(
             await db.get_blogs_count(),
             page_size,
             page_num,
@@ -70,7 +60,7 @@ async def search_blogs(
         db: Database = info.context.db
 
         search_limit = 50
-        (page, page_count) = get_page_with_count(
+        (page, page_count) = utils.get_page_with_count(
             search_limit,
             page_size,
             page_num,

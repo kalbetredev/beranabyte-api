@@ -1,7 +1,9 @@
 import imghdr
+from math import ceil
 import os
 from strawberry.types import Info
 from api.database.database import Database
+from api.database.models.pagemodel import PageModel
 from api.database.models.usermodel import UserModel, UserRole
 
 
@@ -31,3 +33,12 @@ async def check_file_size(file, max_allowed) -> bool:
     file_size = file.tell() / 1000000
     await file.seek(0)
     return file_size < max_allowed
+
+
+def get_page_with_count(max_count, page_size, page_num):
+    page_size = page_size if page_size >= 1 else 10
+    page_count = ceil(max_count / page_size)
+    page_num = 1 if page_num < 1 else page_num
+    page_num = page_count if page_num > page_count else page_num
+    page = PageModel(number=page_num, size=page_size)
+    return (page, page_count)
