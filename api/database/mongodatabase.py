@@ -6,6 +6,7 @@ from api.database.models.blogmodel import BlogModel
 from api.database.models.imagemetadata import ImageMetaData
 from api.database.models.messagemodel import MessageModel
 from api.database.models.pagemodel import PageModel
+from api.database.models.projectmodel import ProjectModel
 from api.database.models.sortmodel import SortModel
 from api.database.models.subscribermodel import SubscriberModel
 from api.database.models.usermodel import UserModel, UserRole
@@ -23,6 +24,7 @@ BLOGS_COLLECTION = "blogs"
 FILES_COLLECTION = "fs.files"
 SUBSCRIBERS_COLLECTION = "subscribers"
 MESSAGES_COLLECTION = "messages"
+PROJECTS_COLLECTION = "projects"
 
 
 class MongoDatabase(Database):
@@ -37,6 +39,7 @@ class MongoDatabase(Database):
         self.files_collection = self.main_db[FILES_COLLECTION]
         self.subscribers_collection = self.main_db[SUBSCRIBERS_COLLECTION]
         self.messages_collection = self.main_db[MESSAGES_COLLECTION]
+        self.projects_collection = self.main_db[PROJECTS_COLLECTION]
         self.blogs_collection.create_index([("$**", TEXT)])
 
     async def get_blogs(
@@ -295,3 +298,63 @@ class MongoDatabase(Database):
         except Exception as error:
             self.logger.error(__name__, error)
             raise DatabaseError("Unable to save message to Database")
+
+    async def get_project_by_id(self, project_id: str) -> ProjectModel | None:
+        try:
+            document = await self.projects_collection.find_one(
+                {"_id": ObjectId(project_id)}
+            )
+            if document is not None:
+                return ProjectModel(**document)
+            else:
+                return None
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to get the project with the specified id")
+
+    async def get_project_by_title(self, project_title: str) -> ProjectModel | None:
+        try:
+            document = await self.projects_collection.find_one({"title": project_title})
+            if document is not None:
+                return ProjectModel(**document)
+            else:
+                return None
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to get the project with the specified title")
+
+    async def add_project(self, project_model: ProjectModel) -> ProjectModel | bool:
+        try:
+            result = await self.projects_collection.insert_one(project_model.dict())
+            return (
+                await self.get_project_by_id(str(result.inserted_id))
+                if result.inserted_id is not None
+                else None
+            )
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to add project to the Database")
+
+    async def delete_project(self, project_id: str) -> bool:
+        try:
+            result = await self.projects_collection.delete_one(
+                {"_id": ObjectId(project_id)}
+            )
+            return result.deleted_count > 0
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to delete the project")
+
+    async def update_project(self, updated_project: ProjectModel) -> bool:
+        try:
+            result = await self.projects_collection.replace_one(
+                {"_id": ObjectId(updated_project.id)}, updated_project.dict()
+            )
+            return (
+                await self.get_project_by_id(updated_project.id)
+                if result.modified_count > 0
+                else None
+            )
+        except Exception as error:
+            self.logger.error(__name__, error)
+            raise DatabaseError("Unable to update the project.")
