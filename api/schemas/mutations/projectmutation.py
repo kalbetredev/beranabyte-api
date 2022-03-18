@@ -100,3 +100,39 @@ class ProjectMutation:
             info.context.logger.error(__name__, error)
             return APIError()
 
+    @strawberry.mutation
+    async def delete_project(
+        self, id: str, info: Info
+    ) -> Union[ActionResult, APIError]:
+        try:
+            db: Database = info.context.db
+
+            if not await utils.is_current_user_admin(info):
+                return APIError(messages.UNAUTHORIZED_ACCESS)
+
+            if not ObjectId.is_valid(id):
+                return ActionResult(
+                    is_successfull=False,
+                    message=messages.INVALID_ID,
+                )
+            else:
+                existing_project = await db.get_project_by_id(id)
+                if existing_project is None:
+                    return ActionResult(
+                        is_successfull=False,
+                        message=messages.PROJECT_NOT_FOUND,
+                    )
+
+                result = await db.delete_project(id)
+                return ActionResult(
+                    is_successfull=result,
+                    message=(
+                        "Project deleted successfully"
+                        if result
+                        else "Unable to delete the project"
+                    ),
+                )
+
+        except Exception as error:
+            info.context.logger.error(__name__, error)
+            return APIError()
