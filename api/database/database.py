@@ -92,6 +92,28 @@ class Database(ABC):
         pass
 
     @abstractmethod
+    async def get_projects(
+        self,
+        page: PageModel,
+        query: dict | None = None,
+        sort: SortModel | None = None,
+    ) -> List[ProjectModel]:
+        pass
+
+    @abstractmethod
+    async def get_projects_count(self) -> int:
+        pass
+
+    @abstractmethod
+    async def search_projects(
+        self,
+        text: str,
+        page: PageModel,
+        max_limit: int,
+    ) -> List[ProjectModel]:
+        pass
+
+    @abstractmethod
     async def get_project_by_id(self, project_id: str) -> ProjectModel | None:
         pass
 
